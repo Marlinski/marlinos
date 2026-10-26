@@ -2,6 +2,8 @@
 base-devel
 git
 openssh
+# terminal description for ssh sessions coming from ghostty (else: "missing or unsuitable terminal")
+ghostty-terminfo
 neovim
 bash-completion
 bat

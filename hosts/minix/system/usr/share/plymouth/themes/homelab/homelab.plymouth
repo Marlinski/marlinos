@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=Homelab
+Description=A pixel-art desk with the Minix box, night to day on boot, day to night on shutdown (marlinos)
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/homelab
+ScriptFile=/usr/share/plymouth/themes/homelab/homelab.script
