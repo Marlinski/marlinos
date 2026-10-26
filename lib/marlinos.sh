@@ -142,7 +142,7 @@ apply_system_files() {
   if printf '%s\n' "${changed[@]}" | grep -q '^/etc/systemd/'; then
     sudo systemctl daemon-reload
   fi
-  if printf '%s\n' "${changed[@]}" | grep -qE '^(/etc/(plymouth|mkinitcpio)|/usr/share/plymouth/)'; then
+  if printf '%s\n' "${changed[@]}" | grep -qE '^(/etc/(plymouth|mkinitcpio|kernel/)|/usr/share/plymouth/)'; then
     sudo mkinitcpio -P
   fi
   if printf '%s\n' "${changed[@]}" | grep -qE '^/etc/(default/grub|grub.d/)'; then

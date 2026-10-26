@@ -2,6 +2,14 @@
 
 Newest first. One line of what, one line of why.
 
+## 2026-10-26: minix host
+- **Minix Z300 = desktop role + home server** (docker, k3s), converted in place (no reinstall). It's managed remotely over ssh, so every boot change must fail safe.
+- **Splash is its own role** (`roles/splash`: plymouth + keep the last frame), out of `roles/desktop`, since layers only add. **Each host draws its own theme**: hutong lives in `hosts/x230`, minix gets a pixel-art server room. Until that theme exists, minix boots with plain `quiet` and no splash role.
+- **Boot: stock `linux` as a UKI, systemd-boot.** Its AMI firmware ignores `BootNext` and moves `\EFI\BOOT\BOOTX64.EFI` ("UEFI OS") back to the front of BootOrder, so that file *is* systemd-boot. One-shot tests use `bootctl set-oneshot`.
+- **`panic=10 rd.emergency=reboot`** on the kernel command line: an initramfs failure reboots instead of hanging a headless box.
+- **Wifi: NetworkManager + iwd, power save off.** ssh reaches it over wifi. NetworkManager config changes apply at next boot; never restart NM remotely.
+- **sshd on 4242, keys only**, with a fail2ban jail on that port. k3s comes from its install script, not a package.
+
 ## 2026-10-26: layers (hardware-agnostic)
 - **common → roles → host layers**, same shape each (packages, aur, services, config, home, bin, system). Lets the Minix Z300 reuse everything, as a server (`ROLES=()`) or a desktop (`ROLES=(desktop)`). That's still undecided.
 - **Host id = hostname.** Renamed this machine `archlinux` → `x230`. DMI names are unreliable on mini PCs ("Default string").
@@ -37,4 +45,3 @@ Newest first. One line of what, one line of why.
 - Wifi card crashes (Intel 2200): memtest86+, `11n_disable=2` test, or swap for an Intel 6205.
 - nvim config (LazyVim starter in `~/.config/nvim`) not yet in the repo.
 - Audio: move from PulseAudio to pipewire-pulse (what Arch recommends now)?
-- Minix Z300: server or desktop → write `hosts/minix/host.conf`.

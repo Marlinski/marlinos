@@ -10,7 +10,7 @@ Everything is drawn at 342x192 logical pixels and written x4 (nearest neighbour)
 Needs only python and ImageMagick (`magick`, to rasterize the Chinese glyphs).
 
 Usage: make.py OUTDIR [--preview DIR]
-  OUTDIR    theme directory (marlinos: roles/desktop/system/usr/share/plymouth/themes/hutong)
+  OUTDIR    theme directory (marlinos: hosts/x230/system/usr/share/plymouth/themes/hutong)
   --preview also write preview PNGs/GIFs of boot and shutdown composited like the script does
 """
 import functools

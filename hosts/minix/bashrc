@@ -1,0 +1,5 @@
+# Minix-only shell settings (sourced last by common/config/bash/rc).
+
+# kubectl here is the k3s binary, which defaults to the root-only /etc/rancher/k3s/k3s.yaml.
+# ~/.kube/config holds the minix and sysiphe contexts.
+export KUBECONFIG=~/.kube/config

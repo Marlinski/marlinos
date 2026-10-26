@@ -1,0 +1,2 @@
+# boot splash (plymouth). The theme and /etc/plymouth/plymouthd.conf come from each host.
+plymouth

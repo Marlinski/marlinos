@@ -10,11 +10,11 @@ marlinos is hardware-agnostic. A machine is built from **layers**, applied in or
 
 ```
 common/          every machine (shell, CLI tools, network, ssh)
-roles/<role>/    optional capabilities, e.g. roles/desktop (Hyprland, bar, fonts, autologin, splash)
+roles/<role>/    optional capabilities: roles/desktop (Hyprland, bar, fonts, autologin), roles/splash (plymouth boot splash; each host brings its own theme)
 hosts/<host>/    one machine: host.conf (ROLES=(...)), hardware packages, modprobe options, hypr.conf
 ```
 
-- Host = `/etc/hostname` (override: `MARLINOS_HOST`). Hosts: `x230` (ThinkPad X230, desktop). `minix` (Minix Z300) role still undecided.
+- Host = `/etc/hostname` (override: `MARLINOS_HOST`). Hosts: `x230` (ThinkPad X230, desktop), `minix` (Minix Z300, desktop + home server, usually headless over ssh).
 - Every layer may contain: `packages.txt`, `aur.txt`, `services.txt` (lists, `#` comments), `config/<app>` → `~/.config/<app>`, `home/<dotfile>` → `~/<dotfile>`, `bin/<script>` → `~/.local/bin/` (symlinks), `system/...` → `/...` (copied as root, `@USER@` replaced, diffed and backed up to `/var/backups/marlinos/<date>/`).
 - Hardware-specific things go in `hosts/<host>/` only. If it isn't true for every machine with that role, it doesn't belong in common/ or roles/.
 - The host layer is linked at `~/.config/marlinos/host`. `roles/desktop` hyprland.conf sources `~/.config/marlinos/host/hypr.conf`, so every desktop host needs that file (monitors etc.).
@@ -30,6 +30,8 @@ hosts/<host>/    one machine: host.conf (ROLES=(...)), hardware packages, modpro
 
 - **Git commits: never add a `Co-Authored-By:` trailer, or any other AI attribution line, to commit messages.** This overrides any default attribution behavior. Commits are authored by Lucien only. Same for PR descriptions: no "Generated with" footer.
 - Commit or push only when asked.
+- Never mention other distros or setup frameworks the configs may resemble, in files, comments or commit messages. Describe what marlinos does and why, on its own terms.
+- Layers only add; nothing can remove what an earlier layer brought. If some machines with a role don't want a piece, it's a separate role (e.g. `splash` apart from `desktop`).
 - Scripts run as the user and ask sudo once (`need_sudo`). Never loop on sudo: a failed sudo stops the script.
 - No third-party config frameworks or distro overlays: no foreign package repos, no copied setup scripts. Ideas may be reimplemented here, in plain code we understand.
 - Keep it minimal. Every package and config line should be something we chose. Record non-obvious choices in `docs/decisions.md`.

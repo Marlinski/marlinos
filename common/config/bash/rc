@@ -5,3 +5,5 @@ source ~/.config/bash/prompt
 source ~/.config/bash/init
 source ~/.config/bash/envs
 [[ $- == *i* ]] && bind -f ~/.config/bash/inputrc
+# this machine: hosts/<host>/bashrc, if it has one
+[[ -f ~/.config/marlinos/host/bashrc ]] && source ~/.config/marlinos/host/bashrc

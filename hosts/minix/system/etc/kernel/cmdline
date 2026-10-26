@@ -1,0 +1,1 @@
+root=PARTUUID=0977bd37-db05-4a13-9766-2a0b0f492b4b rw quiet panic=10 rd.emergency=reboot rd.shell=0

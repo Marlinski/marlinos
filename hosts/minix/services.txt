@@ -1,0 +1,10 @@
+systemd-boot-update.service
+iwd.service
+bluetooth.service
+sshd.service
+fail2ban.service
+docker.service
+wowlan.service
+# k3s needs a default route at start: wait for wifi (systemctl unmask it if it was masked)
+NetworkManager-wait-online.service
+# k3s.service comes from the k3s install script (/usr/local/bin/k3s), not a package

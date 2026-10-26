@@ -1,0 +1,22 @@
+# hardware
+linux
+linux-firmware-intel
+linux-firmware-realtek
+intel-ucode
+sof-firmware
+intel-media-driver
+vulkan-intel
+bluez
+bluez-utils
+iw
+efibootmgr
+
+# network: NetworkManager with the iwd backend (ssh comes in over wifi)
+iwd
+
+# server
+docker
+docker-compose
+docker-buildx
+fail2ban
+# docker: log rotation, public DNS, fixed bridge subnet (system/etc/docker/daemon.json)

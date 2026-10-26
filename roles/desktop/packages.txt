@@ -17,12 +17,10 @@ qt5-wayland
 qt6-wayland
 wl-clipboard
 slurp
-wl-screenrec
 brightnessctl
 playerctl
 wireplumber
 power-profiles-daemon
-plymouth
 alacritty
 
 # fonts

@@ -1,0 +1,12 @@
+# marlinos (minix): the linux kernel as a unified kernel image, found by systemd-boot in /boot/EFI/Linux.
+# The kernel command line comes from /etc/kernel/cmdline.
+
+ALL_config="/etc/mkinitcpio.conf"
+ALL_kver="/boot/vmlinuz-linux"
+
+PRESETS=('default' 'fallback')
+
+default_uki="/boot/EFI/Linux/arch-linux.efi"
+
+fallback_uki="/boot/EFI/Linux/arch-linux-fallback.efi"
+fallback_options="-S autodetect"
