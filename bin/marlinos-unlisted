@@ -1,0 +1,4 @@
+#!/bin/bash
+# Explicitly installed packages that no layer lists: candidates to list or remove.
+source "$(dirname "$(readlink -f "$0")")/../lib/marlinos.sh"
+pacman -Qeq | sort | comm -23 - <({ layer_list packages.txt; layer_list aur.txt; } | sort -u)

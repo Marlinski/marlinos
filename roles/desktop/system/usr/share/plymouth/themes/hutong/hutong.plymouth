@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=Hutong
+Description=胡同: a pixel-art Beijing hutong, night to day on boot, day to night on shutdown (marlinos)
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/hutong
+ScriptFile=/usr/share/plymouth/themes/hutong/hutong.script

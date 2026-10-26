@@ -1,0 +1,42 @@
+{
+  "layer": "top",
+  "position": "top",
+  "height": 24,
+  "modules-left": ["hyprland/workspaces"],
+  "modules-center": ["clock"],
+  "modules-right": ["tray", "pulseaudio", "backlight", "network", "cpu", "memory", "battery"],
+
+  "hyprland/workspaces": {
+    "on-click": "activate",
+    "persistent-workspaces": { "*": 5 }
+  },
+  "clock": {
+    "format": "{:%a %d %b  %H:%M}",
+    "tooltip-format": "<tt>{calendar}</tt>"
+  },
+  "tray": { "spacing": 8 },
+  "pulseaudio": {
+    "format": "{icon} {volume}%",
+    "format-muted": "󰝟 mute",
+    "format-icons": { "default": ["󰕿", "󰖀", "󰕾"] },
+    "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+  },
+  "backlight": {
+    "format": "󰃠 {percent}%"
+  },
+  "network": {
+    "format-wifi": "󰖩 {essid} {signalStrength}%",
+    "format-ethernet": "󰈀 {ipaddr}",
+    "format-disconnected": "󰖪 off",
+    "tooltip-format": "{ifname} {ipaddr} {bandwidthDownBytes}↓ {bandwidthUpBytes}↑",
+    "on-click": "alacritty -e nmtui"
+  },
+  "cpu": { "format": "󰻠 {usage}%", "interval": 5 },
+  "memory": { "format": "󰍛 {percentage}%", "interval": 10 },
+  "battery": {
+    "states": { "warning": 25, "critical": 10 },
+    "format": "{icon} {capacity}%",
+    "format-charging": "󰂄 {capacity}%",
+    "format-icons": ["󰁺", "󰁼", "󰁾", "󰂀", "󰁹"]
+  }
+}

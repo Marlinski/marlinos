@@ -1,0 +1,8 @@
+linux
+linux-firmware-intel
+linux-firmware-broadcom
+intel-ucode
+vulkan-intel
+libva-intel-driver
+bluez
+bluez-utils

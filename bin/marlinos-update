@@ -1,0 +1,36 @@
+#!/bin/bash
+# Update the system and re-apply marlinos.
+# Usage: bin/marlinos-update [--no-pull]
+source "$(dirname "$(readlink -f "$0")")/../lib/marlinos.sh"
+
+[[ $EUID -ne 0 ]] || { warn "run as your user, not root"; exit 1; }
+
+if [[ ${1:-} != --no-pull ]] && git -C "$REPO" remote | grep -q .; then
+  step "marlinos repo"
+  if [[ -n $(git -C "$REPO" status --porcelain) ]]; then
+    warn "uncommitted changes in $REPO, not pulling"
+  else
+    git -C "$REPO" pull --ff-only | sed 's/^/    /'
+  fi
+fi
+
+need_sudo
+
+step "System upgrade (pacman -Syu)"
+sudo pacman -Syu
+
+if command -v yay &>/dev/null; then
+  step "AUR upgrade"
+  yay -Sua
+fi
+
+install_repo_packages
+install_aur_packages
+apply_system_files
+ensure_grub_microcode
+enable_services
+link_configs
+check_hyprland_config
+reload_session
+report
+step "Done."

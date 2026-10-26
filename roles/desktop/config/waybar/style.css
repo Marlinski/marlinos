@@ -1,0 +1,27 @@
+* {
+  font-family: "CaskaydiaMono Nerd Font";
+  font-size: 12px;
+  min-height: 0;
+  border: none;
+  border-radius: 0;
+}
+
+window#waybar {
+  background: #1a1b26;
+  color: #c0caf5;
+}
+
+#workspaces button {
+  padding: 0 6px;
+  color: #565f89;
+}
+#workspaces button.active { color: #7aa2f7; }
+#workspaces button.empty { color: #414868; }
+
+#clock, #tray, #pulseaudio, #backlight, #network, #cpu, #memory, #battery {
+  padding: 0 8px;
+}
+
+#battery.warning { color: #e0af68; }
+#battery.critical:not(.charging) { color: #f7768e; }
+#network.disconnected, #pulseaudio.muted { color: #565f89; }

@@ -1,0 +1,19 @@
+#!/bin/bash
+# Set up marlinos on an Arch machine (also safe to re-run on an installed one).
+# Usage: bin/marlinos-install
+source "$(dirname "$(readlink -f "$0")")/../lib/marlinos.sh"
+
+[[ -f /etc/arch-release ]] || { warn "not Arch Linux"; exit 1; }
+[[ $EUID -ne 0 ]] || { warn "run as your user, not root (sudo is used where needed)"; exit 1; }
+
+describe
+need_sudo
+install_repo_packages
+install_aur_packages
+apply_system_files
+ensure_grub_microcode
+enable_services
+link_configs
+check_hyprland_config
+report
+step "Done. Reboot to start from tty1 autologin."

@@ -1,0 +1,9 @@
+# Changes require a relaunch of Hyprland to take effect.
+
+export PATH=$HOME/.local/bin:$PATH
+
+# Set default terminal and editor
+source ~/.config/uwsm/default
+
+# Activate mise if present on the system
+command -v mise >/dev/null && eval "$(mise activate bash)"

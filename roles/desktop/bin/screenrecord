@@ -1,0 +1,11 @@
+#!/bin/bash
+# Toggle a wl-screenrec recording: `screenrecord region|output [audio]`; run again to stop.
+if pkill -INT -x wl-screenrec; then
+  notify-send "Screen recording saved" "$(xdg-user-dir VIDEOS)"
+  exit 0
+fi
+out="$(xdg-user-dir VIDEOS)/screenrecording-$(date +%Y-%m-%d_%H-%M-%S).mp4"
+args=()
+[[ $1 == region ]] && { geom=$(slurp) || exit 1; args+=(-g "$geom"); }
+[[ $2 == audio ]] && args+=(--audio)
+wl-screenrec "${args[@]}" -f "$out" &

@@ -1,0 +1,21 @@
+# every machine
+base-devel
+git
+openssh
+neovim
+bash-completion
+bat
+eza
+fd
+fzf
+ripgrep
+zoxide
+btop
+starship
+lazygit
+github-cli
+tldr
+ncdu
+ranger
+networkmanager
+wireless-regdb

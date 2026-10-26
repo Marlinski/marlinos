@@ -1,0 +1,5 @@
+#!/bin/bash
+# Re-create the config symlinks for this machine's layers (no sudo needed).
+source "$(dirname "$(readlink -f "$0")")/../lib/marlinos.sh"
+describe
+link_configs
