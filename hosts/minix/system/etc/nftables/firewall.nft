@@ -1,0 +1,65 @@
+#!/usr/bin/nft -f
+# marlinos (minix): the firewall, IPv4 and IPv6 in one table.
+#
+# docker and k3s keep their own iptables-nft tables (nat, filter...); this table sits next to
+# them and only adds drops. A packet must pass every table on a hook, so nothing here can
+# open what they close, and loading or deleting this table never touches their rules.
+#
+#   internet: ssh (4242), ping
+#   LAN:      + k3s API, docker-published ports (IOU), traefik, mDNS / SSDP
+#   docker / k3s networks: everything (pods and containers talk to host services)
+#
+# Loaded by firewall.service. Re-running this file replaces the table in one step.
+
+table inet firewall {}
+delete table inet firewall
+
+table inet firewall {
+    set private4 {
+        type ipv4_addr; flags interval
+        elements = { 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16 }
+    }
+    set lan4 {
+        type ipv4_addr; flags interval
+        elements = { 192.168.1.0/24 }
+    }
+
+    chain input {
+        type filter hook input priority filter; policy drop;
+
+        ct state established,related accept
+        ct state invalid drop
+        iif lo accept
+
+        # container and pod networks (DNS, k3s API from pods, kubelet...)
+        iifname { "docker0", "br-*", "veth*", "cni0", "flannel.1" } accept
+
+        # IPv4/IPv6 plumbing: ping and errors, neighbour discovery, router adverts, DHCP
+        icmp type { echo-request, destination-unreachable, time-exceeded, parameter-problem } accept
+        icmpv6 type { echo-request, destination-unreachable, packet-too-big, time-exceeded, parameter-problem,
+                      nd-router-solicit, nd-router-advert, nd-neighbor-solicit, nd-neighbor-advert,
+                      mld-listener-query, mld2-listener-report } accept
+        udp sport 67 udp dport 68 accept
+        ip6 saddr fe80::/10 udp sport 547 udp dport 546 accept
+
+        # ssh, from anywhere (fail2ban bans in its own chain still apply)
+        tcp dport 4242 accept
+
+        # LAN only: k3s API, mDNS, SSDP
+        ip saddr @lan4 tcp dport 6443 accept
+        ip daddr 224.0.0.251 udp dport 5353 accept
+        ip6 daddr ff02::fb udp dport 5353 accept
+        ip saddr @lan4 ip daddr 239.255.255.250 udp dport 1900 accept
+
+        ct state new limit rate 5/minute log prefix "firewall drop: " level info
+    }
+
+    chain forward {
+        type filter hook forward priority filter; policy accept;
+
+        # Published docker ports and k3s host ports arrive DNATed and are forwarded, not input:
+        # new connections to them from outside the LAN / private ranges are dropped.
+        ct state new ct status dnat ip saddr != @private4 drop
+        ct state new ct status dnat ip6 saddr != fe80::/10 drop
+    }
+}
