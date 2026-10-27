@@ -31,7 +31,7 @@
     "tooltip-format": "{ifname} {ipaddr} {bandwidthDownBytes}↓ {bandwidthUpBytes}↑",
     "on-click": "alacritty -e nmtui"
   },
-  "cpu": { "format": "󰻠 {usage}%", "interval": 5 },
+  "cpu": { "format": "󰻠 {usage}%", "interval": 5, "on-click": "~/.local/bin/control-center" },
   "memory": { "format": "󰍛 {percentage}%", "interval": 10 },
   "battery": {
     "states": { "warning": 25, "critical": 10 },

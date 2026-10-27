@@ -13,6 +13,7 @@ fzf
 ripgrep
 zoxide
 btop
+tmux
 starship
 lazygit
 github-cli

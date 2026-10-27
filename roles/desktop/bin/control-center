@@ -1,0 +1,10 @@
+#!/bin/bash
+# Control center: btop next to the status panel (WireGuard mesh, addresses, disks, services),
+# in one floating window. Run again (click the cpu icon again) to close it.
+if hyprctl clients | grep -q 'class: control-center$'; then
+  hyprctl dispatch closewindow class:control-center >/dev/null
+  exit 0
+fi
+tmux -L control-center kill-server 2>/dev/null   # a session left from a closed window
+exec uwsm app -- alacritty --class control-center --title "Control center" -e \
+  tmux -L control-center -f ~/.config/control-center/tmux.conf attach -t cc

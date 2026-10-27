@@ -1,0 +1,86 @@
+#!/bin/bash
+# The control center's right-hand panel, redrawn every 5 s: this machine, its addresses,
+# the WireGuard mesh, disks, failed services (and docker / k3s where they run).
+b=$'\e[1;34m' g=$'\e[32m' y=$'\e[33m' r=$'\e[31m' d=$'\e[90m' n=$'\e[0m'
+
+human() {  # bytes -> 1.2G
+  numfmt --to=iec --suffix=B "$1" 2>/dev/null || echo "$1"
+}
+
+ago() {  # seconds since a unix time, or "never"
+  local t=$1 s
+  ((t == 0)) && { echo never; return; }
+  s=$(($(date +%s) - t))
+  if ((s < 120)); then echo "${s}s"; elif ((s < 7200)); then echo "$((s / 60))m"; else echo "$((s / 3600))h"; fi
+}
+
+section() { printf '\n%s%s%s\n' "$b" "$1" "$n"; }
+
+draw() {
+  printf '%s%s%s  %s\n' "$b" "$(hostname)" "$n" "$(uptime -p | sed 's/^up //')"
+  printf '%sload %s%s\n' "$d" "$(cut -d' ' -f1-3 /proc/loadavg)" "$n"
+
+  section "Network"
+  ip -br -4 addr | awk '$1 !~ /^(lo|docker|br-|veth|cni|flannel)/ { printf "  %-10s %s\n", $1, $3 }'
+  ip route show default | awk '{ printf "  %-10s via %s\n", "default", $3; exit }'
+
+  section "WireGuard mesh"
+  if ! ip link show wg0 &>/dev/null; then
+    echo "  ${d}no wg0 here${n}"
+  else
+    printf '  %-10s %s %s(me)%s\n' "$(hostname)" "$(ip -br -4 addr show wg0 | awk '{print $3}' | cut -d/ -f1)" "$d" "$n"
+    if [[ -r /run/wg-status/wg0 ]]; then
+      local name key endpoint allowed hs rx tx ip age color ms
+      while read -r name key endpoint allowed hs rx tx; do
+        ip=${allowed%%/*}
+        age=$(ago "$hs")
+        if ((hs > 0 && $(date +%s) - hs < 180)); then color=$g; else color=$r; fi
+        ms=$(ping -c1 -W1 "$ip" 2>/dev/null | sed -n 's/.*time=\([0-9.]*\).*/\1/p')
+        printf '  %s●%s %-8s %-10s %5s %s%s%s\n' "$color" "$n" "$name" "$ip" "$age" "$d" \
+          "${ms:+${ms%.*}ms }$(human "$rx")↓ $(human "$tx")↑" "$n"
+      done < /run/wg-status/wg0
+    else
+      echo "  ${d}(peer status: sudo systemctl start wg-status)${n}"
+    fi
+  fi
+
+  section "Disks"
+  df -h -x tmpfs -x devtmpfs -x efivarfs -x overlay --output=target,used,size,pcent 2>/dev/null |
+    awk 'NR > 1 && $1 !~ /^\/(boot|var\/lib)/ { printf "  %-14s %6s / %-6s %s\n", $1, $2, $3, $4 }'
+
+  if command -v kubectl &>/dev/null && [[ -n ${KUBECONFIG:-} || -r ~/.kube/config ]]; then
+    local pods
+    pods=$(timeout 3 kubectl get pods -A --no-headers 2>/dev/null)
+    if [[ -n $pods ]]; then
+      section "k3s"
+      echo "$pods" | awk '{ t++; if ($4 == "Running" || $4 == "Completed") ok++; else bad = bad " " $2 }
+        END { printf "  %d/%d pods running%s\n", ok, t, (bad ? "\n  \033[31mnot ready:" bad "\033[0m" : "") }'
+    fi
+  fi
+  if systemctl is-active -q docker 2>/dev/null; then
+    local c
+    if c=$(timeout 3 docker ps --format '{{.Names}}' 2>/dev/null); then
+      section "Docker"
+      echo "  $(echo "$c" | grep -c .) containers up"
+    fi
+  fi
+
+  section "Services"
+  local failed
+  failed=$(systemctl --failed --no-legend --plain 2>/dev/null | awk '{print $1}')
+  if [[ -z $failed ]]; then
+    echo "  ${g}all ok${n}"
+  else
+    echo "$failed" | sed "s/^/  ${r}✗${n} /"
+  fi
+}
+
+export KUBECONFIG=${KUBECONFIG:-$HOME/.kube/config}
+[[ ${1:-} == --once ]] && { draw; exit; }   # one frame, for testing
+tput civis
+trap 'tput cnorm' EXIT
+while :; do
+  frame=$(draw)
+  printf '\e[H\e[2J%s' "$frame"
+  sleep 5
+done

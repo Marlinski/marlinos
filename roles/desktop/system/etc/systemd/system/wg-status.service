@@ -1,0 +1,14 @@
+# marlinos: WireGuard peer status for the control center (/run/wg-status/wg0).
+# Runs while wg-quick@wg0 does; on a machine without wg0 it never starts.
+[Unit]
+Description=WireGuard peer status for the control center
+BindsTo=wg-quick@wg0.service
+After=wg-quick@wg0.service
+
+[Service]
+ExecStart=/bin/bash /usr/local/bin/wg-status
+RuntimeDirectory=wg-status
+RuntimeDirectoryMode=0755
+
+[Install]
+WantedBy=wg-quick@wg0.service
