@@ -19,7 +19,6 @@ wl-clipboard
 slurp
 brightnessctl
 playerctl
-ncspot
 wireplumber
 power-profiles-daemon
 alacritty
