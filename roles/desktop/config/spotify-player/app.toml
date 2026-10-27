@@ -1,0 +1,4 @@
+# spotify_player (bin/music). Only what differs from the defaults.
+# Web API client: your own Spotify app (developer.spotify.com/dashboard, redirect URI
+# http://127.0.0.1:8989/login); its client ID is kept outside the repo, in this file.
+client_id_command = { command = "sh", args = ["-c", "cat ~/.local/share/spotify-player/client_id"] }
