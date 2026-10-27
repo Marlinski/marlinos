@@ -1,5 +1,5 @@
 #!/bin/bash
-# waybar music module: a note, plus artist - title while spotify_player plays. One JSON line per change.
+# waybar music module: a note, plus artist - title while ncspot plays. One JSON line per change.
 show() {  # status artist title
   local text=󰝚 track
   track=$(printf '%s - %s' "$2" "$3" | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g')
@@ -9,5 +9,5 @@ show() {  # status artist title
     '{text: $t, class: ($c | ascii_downcase), tooltip: $tip}'
 }
 show Stopped
-playerctl -p spotify_player --follow metadata --format $'{{status}}\t{{artist}}\t{{title}}' 2>/dev/null |
+playerctl -p ncspot --follow metadata --format $'{{status}}\t{{artist}}\t{{title}}' 2>/dev/null |
   while IFS=$'\t' read -r status artist title; do show "$status" "$artist" "$title"; done

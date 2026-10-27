@@ -19,7 +19,7 @@ wl-clipboard
 slurp
 brightnessctl
 playerctl
-spotify-player
+ncspot
 wireplumber
 power-profiles-daemon
 alacritty

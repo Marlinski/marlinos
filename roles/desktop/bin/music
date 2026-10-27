@@ -1,23 +1,8 @@
 #!/bin/bash
-# Music: spotify_player in a terminal on the special workspace "music". Run again (click the note
-# in the bar, or Super+M) to hide or show it; it keeps playing while hidden.
-# The first time, it asks for the client ID of your own Spotify app (see config/spotify-player/app.toml).
+# Music: ncspot in a terminal on the special workspace "music". Run again (click the note in the
+# bar, or Super+M) to hide or show it; it keeps playing while hidden.
 if [[ ${1:-} == --run ]]; then
-  id=~/.local/share/spotify-player/client_id
-  if [[ ! -s $id ]]; then
-    cat <<'MSG'
-spotify_player needs the client ID of your own Spotify app (once per machine):
-
-  1. https://developer.spotify.com/dashboard -> Create app
-  2. Redirect URI: http://127.0.0.1:8989/login   API: Web API
-  3. Settings -> copy the Client ID
-
-MSG
-    read -rp "Client ID: " cid
-    [[ -n $cid ]] || exit 1
-    mkdir -p "${id%/*}" && printf '%s\n' "$cid" >"$id"
-  fi
-  spotify_player || read -rp "spotify_player exited with an error; Enter to close"
+  ncspot || read -rp "ncspot exited with an error; Enter to close"
   exit
 fi
 if hyprctl clients | grep -q 'class: music$'; then
