@@ -1,14 +1,16 @@
-# Hyprland :: the marlinos keys (read live from your hyprland.conf)
+# Hyprland :: the marlinos keys (read live from your hyprland.lua)
 
 
-!binds ~/.config/hypr/hyprland.conf
+!binds ~/.config/hypr/hyprland.lua
+!binds ~/.config/marlinos/host/hypr.lua
 
 ## hyprctl
 hyprctl clients :: open windows with class, workspace, size
 hyprctl activewindow :: the focused one (find a window's class for a rule)
-hyprctl reload :: re-read the config
-hyprctl dispatch <dispatcher> <arg> :: run any dispatcher (workspace 3, exec foot…)
+hyprctl reload :: re-read the config (reload full-reset: when switching from .conf)
+hyprctl dispatch "hl.dsp.focus({ workspace = 3 })" :: run a dispatcher (Lua: hl.dsp.window.close(), hl.dsp.exec_cmd('foot')…)
+hyprctl repl 'hl.get_active_window().class' :: evaluate Lua in the running Hyprland
 hyprctl binds :: every key binding
 hyprctl monitors :: outputs, scale, refresh rate
-Hyprland --verify-config -c ~/.config/hypr/hyprland.conf :: check the config before reloading
-> config: roles/desktop/config/hypr/hyprland.conf, per machine: hosts/<host>/hypr.conf
+Hyprland --verify-config -c ~/.config/hypr/hyprland.lua :: check the config before reloading
+> config: roles/desktop/config/hypr/hyprland.lua, per machine: hosts/<host>/hypr.lua

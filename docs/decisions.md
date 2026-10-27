@@ -41,8 +41,11 @@ Newest first. One line of what, one line of why.
 - **Cheat sheets: `cheat <topic>`** (`common/bin/cheat`, data in `common/config/cheat/*.cheat`):
   one renderer, plain data files (`command :: description`, `## section`, `> note`), Tokyo Night
   colors, wrapped to the terminal width (never horizontal scrolling), columns on wide screens,
-  `less` when taller than the screen. The Hyprland sheet reads the `bindd` lines of the live
+  `less` when taller than the screen. The Hyprland sheet reads the `bind(...)` lines of the live
   config. Each sheet has a launcher entry (Super+Space, "<topic> cheat sheet").
+- **Hyprland config in Lua** (`hyprland.lua`, `hosts/<host>/hypr.lua`): Hyprland 0.56 warns at
+  login that the `.conf` format is removed in 0.57. Same settings and keys, one `bind()` helper
+  that keeps the descriptions; scripts and hypridle send Lua dispatchers and read `hyprctl clients -j`.
 - **tmux activity:** a background window with new output has its name in bold yellow, no extra mark.
 
 ## 2026-10-27: package lists, shell, dev role
@@ -71,7 +74,7 @@ Newest first. One line of what, one line of why.
 ## 2026-10-26: layers (hardware-agnostic)
 - **common → roles → host layers**, same shape each (packages, aur, services, config, home, bin, system). Lets the Minix Z300 reuse everything, as a server (`ROLES=()`) or a desktop (`ROLES=(desktop)`). That's still undecided.
 - **Host id = hostname.** Renamed this machine `archlinux` → `x230`. DMI names are unreliable on mini PCs ("Default string").
-- **Per-host Hyprland bits** in `hosts/<host>/hypr.conf`, sourced last.
+- **Per-host Hyprland bits** in `hosts/<host>/hypr.lua` (was `hypr.conf`), run last.
 - **Audio:** this machine runs PulseAudio (pipewire is installed too). pipewire-pulse is not forced; switching is an open item.
 
 ## 2026-10-26: install/update scripts
@@ -86,7 +89,7 @@ Newest first. One line of what, one line of why.
 - **No config framework.** Only Arch repos + AUR, no foreign package repo or mirror, no unattended migration scripts. Everything installed is something we chose.
 - **Configs live in this repo**, symlinked into `~/.config` by `bin/marlinos-link`. One place to edit, git history for every change.
 - **Login:** getty autologin on tty1 + `~/.bash_profile` starts `uwsm start hyprland.desktop` (no `exec`: a Hyprland crash drops to a shell, not a login loop). hyprlock protects the session.
-- **Hyprland config is one file** (`config/hypr/hyprland.conf`). It's small enough to read top to bottom.
+- **Hyprland config is one file** (`config/hypr/hyprland.lua` since 2026-10-27, `hyprland.conf` before). It's small enough to read top to bottom.
 - **Launcher: fuzzel.** Walker 2 needs the elephant daemon + provider plugins; fuzzel is one binary that reads .desktop files.
 - **Theme: Tokyo Night colors written directly in each config.** No theme switcher, no symlink layer. Palette: bg `#1a1b26`, fg `#c0caf5`, blue `#7aa2f7`, grey `#414868`, red `#f7768e`, yellow `#e0af68`.
 - **No wallpaper:** solid background (`misc:background_color`). Nothing to run, nothing to download.

@@ -10,7 +10,7 @@
 #   system/...    -> /...                 (copied as root, @USER@ replaced in text files, backed up)
 #   src/          sources that generate files elsewhere in the layer (not applied)
 #   flake.nix     a Nix environment, installed into the user's Nix profile (named after the layer)
-# The host layer is also linked as ~/.config/marlinos/host, for files like hypr.conf.
+# The host layer is also linked as ~/.config/marlinos/host, for files like hypr.lua.
 #
 # Scripts run as the user and call sudo for system steps. sudo is asked once up front;
 # if it fails we stop (no retry loops: they trigger faillock and lock the account).
@@ -234,9 +234,9 @@ install_nix_profiles() {
 }
 
 check_hyprland_config() {
-  [[ -e ~/.config/hypr/hyprland.conf ]] && command -v Hyprland &>/dev/null || return 0
+  [[ -e ~/.config/hypr/hyprland.lua ]] && command -v Hyprland &>/dev/null || return 0
   step "Hyprland config check"
-  Hyprland --verify-config -c ~/.config/hypr/hyprland.conf 2>&1 | tail -1 | sed 's/^/    /'
+  Hyprland --verify-config -c ~/.config/hypr/hyprland.lua 2>&1 | tail -1 | sed 's/^/    /'
 }
 
 reload_session() {

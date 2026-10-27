@@ -10,7 +10,7 @@ A .cheat file:
   ## Section
   command <arg> :: what it does, `code` in backticks
   > a note
-  !binds <file>      entries from a Hyprland config's bindd lines (always up to date)
+  !binds <file>      entries from a Hyprland Lua config's bind(...) lines (always up to date)
 Lines are wrapped to the width (never wider than the terminal); wide terminals get columns.
 The launcher (Super+Space) has one entry per sheet: roles/desktop/system/usr/local/share/applications.
 """
@@ -63,30 +63,30 @@ def vislen(s):
 
 
 def binds(conf):
-    """Sections of (keys, description) from a Hyprland config: its "# ---- name" comments give
-    the sections, bindd lines (bindd = MODS, KEY, Description, ...) the entries. A run like
-    Workspace 1 … Workspace 10 becomes one line."""
+    """Sections of (keys, description) from a Hyprland Lua config: its "-- ---- name" comments give
+    the sections, bind("MODS + KEY", "Description", ...) lines the entries. A run like
+    Workspace 1 … Workspace 9 becomes one line."""
     try:
         text = Path(os.path.expanduser(conf)).read_text()
     except OSError:
         return [("Keys", [("", f"(cannot read {conf})")])]
     sections, name = [], "Keys"
     for line in text.splitlines():
-        m = re.match(r"#\s*-{10,}\s*(.+)", line)
+        m = re.match(r"\s*--\s*-{10,}\s*(.+)", line)
         if m:
             name = m.group(1).strip().capitalize()
             continue
-        m = re.match(r"\s*bind[a-z]*d[a-z]*\s*=\s*([^,]*),\s*([^,]+),\s*([^,]+),", line)
+        m = re.match(r'\s*bind\("([^"]+)",\s*"([^"]+)"', line)
         if not m:
             continue
-        mods, key, desc = (x.strip() for x in m.groups())
-        key = {"mouse:272": "LMB", "mouse:273": "RMB", "Prior": "PgUp", "Next": "PgDn"}.get(key, key)
+        parts = [x.strip() for x in m.group(1).split("+")]
+        key = {"mouse:272": "LMB", "mouse:273": "RMB", "Prior": "PgUp", "Next": "PgDn"}.get(parts[-1], parts[-1])
         key = re.sub(r"^XF86", "", key)
         key = key[:1].upper() + key[1:]
-        keys = "+".join([w.capitalize() for w in mods.replace("$mainMod", "SUPER").split()] + [key])
+        keys = "+".join([w.capitalize() for w in parts[:-1]] + [key])
         if not sections or sections[-1][0] != name:
             sections.append((name, []))
-        sections[-1][1].append((keys, desc))
+        sections[-1][1].append((keys, m.group(2)))
     out = []
     for name, entries in sections:   # collapse numbered runs
         merged = []

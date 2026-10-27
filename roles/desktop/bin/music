@@ -1,6 +1,6 @@
 #!/bin/bash
 # Music: the Spotify app, tiled. Run again (click the note in the bar, or Super+M) to jump to it.
-if hyprctl clients | grep -qi 'class: spotify$'; then
-  exec hyprctl dispatch focuswindow 'class:(?i)^spotify$' >/dev/null
+if hyprctl clients -j | jq -e 'any(.class | test("^spotify$"; "i"))' >/dev/null; then
+  exec hyprctl dispatch "hl.dsp.focus({ window = 'class:(?i)^spotify$' })" >/dev/null
 fi
 exec uwsm app -- spotify

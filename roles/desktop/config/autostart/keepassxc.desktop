@@ -2,6 +2,6 @@
 Type=Application
 Name=KeePassXC
 Comment=Password manager, started on workspace 10 so the browser extension can reach it (no tray icon)
-Exec=hyprctl dispatch exec "[workspace 10 silent] uwsm app -- keepassxc"
+Exec=hyprctl dispatch "hl.dsp.exec_cmd('uwsm app -- keepassxc', { workspace = '10 silent' })"
 Icon=keepassxc
 X-GNOME-Autostart-enabled=true
