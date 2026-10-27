@@ -281,24 +281,53 @@ fun refresh_callback()
       cursor.SetOpacity(0);
     else
       cursor.SetOpacity(1);
+    if (asking && Math.Int(tick / 20) % 2 == 0)
+      caret.SetOpacity(1);
+    else
+      caret.SetOpacity(0);
   }
 Plymouth.SetRefreshFunction(refresh_callback);
 
 # ---------------------------------------------------------------- password & messages
 
-prompt_sprite = Sprite();
+# Disk unlock (systemd-cryptsetup asks through plymouth): a HUD panel over the sky,
+# one little lantern per typed character, a blinking caret. The street stays at night
+# until the key is in, since boot progress waits for it.
+LOCK_X = Math.Int((LOGICAL_W - 150) / 2);
+LOCK_Y = 56;
+KEY_MAX = 21;                     # lanterns that fit the field; more characters still count
+lock = Sprite(load("lock.png"));
+place(lock, LOCK_X, LOCK_Y, 300);
+lock.SetOpacity(0);
+key_image = load("key.png");
+for (i = 0; i < KEY_MAX; i++)
+  {
+    key[i] = Sprite(key_image);
+    place(key[i], LOCK_X + 11 + i * 6, LOCK_Y + 20, 301);
+    key[i].SetOpacity(0);
+  }
+caret = Sprite(load("key-caret.png"));
+caret.SetOpacity(0);
+asking = 0;
+
 fun display_password_callback(prompt, bullets)
   {
-    local.stars = "";
-    for (local.i = 0; i < bullets; i++)
-      stars = stars + "*";
-    prompt_sprite.SetImage(Image.Text(prompt + "  " + stars, 1, 0.9, 0.6));
-    place(prompt_sprite, 8, 150, 300);
-    prompt_sprite.SetOpacity(1);
+    global.asking = 1;
+    lock.SetOpacity(1);
+    for (local.i = 0; i < KEY_MAX; i++)
+      if (i < bullets)
+        key[i].SetOpacity(1);
+      else
+        key[i].SetOpacity(0);
+    place(caret, LOCK_X + 11 + Math.Min(bullets, KEY_MAX) * 6, LOCK_Y + 20, 301);
   }
 fun display_normal_callback()
   {
-    prompt_sprite.SetOpacity(0);
+    global.asking = 0;
+    lock.SetOpacity(0);
+    caret.SetOpacity(0);
+    for (local.i = 0; i < KEY_MAX; i++)
+      key[i].SetOpacity(0);
   }
 Plymouth.SetDisplayPasswordFunction(display_password_callback);
 Plymouth.SetDisplayNormalFunction(display_normal_callback);

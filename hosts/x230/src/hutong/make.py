@@ -926,6 +926,32 @@ def hud_panel(w, h):
     return cv
 
 
+LOCK_W, LOCK_H = 150, 34          # passphrase panel (disk unlock), field inset below the label
+FIELD_X, FIELD_Y, FIELD_W, FIELD_H = 8, 18, 134, 11
+KEY_STEP = 6                      # one little lantern per typed character
+
+
+def lock_panel():
+    cv = hud_panel(LOCK_W, LOCK_H)
+    cv.paste(label("密码", "PASSWORD", GOLD), (LOCK_W - label("密码", "PASSWORD", GOLD).w) // 2, 3)
+    cv.rect(FIELD_X, FIELD_Y, FIELD_W, FIELD_H, (12, 8, 18, 240))
+    cv.hline(FIELD_X, FIELD_X + FIELD_W - 1, FIELD_Y, (90, 70, 100))
+    cv.hline(FIELD_X, FIELD_X + FIELD_W - 1, FIELD_Y + FIELD_H - 1, (90, 70, 100))
+    cv.vline(FIELD_X, FIELD_Y, FIELD_Y + FIELD_H - 1, (90, 70, 100))
+    cv.vline(FIELD_X + FIELD_W - 1, FIELD_Y, FIELD_Y + FIELD_H - 1, (90, 70, 100))
+    return cv
+
+
+def key_lantern():  # 5x7 mini lantern, the "bullet" for a typed character
+    cv = Canvas(5, 7)
+    cv.rect(1, 0, 3, 1, GOLD)
+    cv.rect(0, 1, 5, 4, RED)
+    cv.vline(1, 2, 3, (255, 140, 100))
+    cv.rect(1, 5, 3, 1, GOLD)
+    cv.set(2, 6, RED)
+    return cv
+
+
 def label(zh, en, color):
     g = [cjk(ch, 10) for ch in zh]
     w = sum(len(x[0]) + 1 for x in g) + 6 + text_width(en, 2) + 2
@@ -1037,6 +1063,9 @@ def main():
     label("关机", "SHUTTING DOWN", (255, 140, 170)).save(f"{out}/label-shutdown.png")
     label("重启", "REBOOTING", (140, 220, 255)).save(f"{out}/label-reboot.png")
     hud_panel(150, 22).save(f"{out}/hud.png")
+    lock_panel().save(f"{out}/lock.png")
+    key_lantern().save(f"{out}/key.png")
+    Canvas(2, 7, (250, 240, 220, 255)).save(f"{out}/key-caret.png")
     bar = Canvas(122, 5)
     for x in range(122):
         bar.set(x, 0, (250, 240, 220))

@@ -1,0 +1,6 @@
+# marlinos x230: /etc/crypttab (installed by hand during the switch, see docs/encryption.md)
+# data: the HDD (LUKS2, LVM inside: home, music, opt). Passphrase asked at boot through plymouth.
+data  UUID=35e44968-9e83-4769-bad4-92f33aceb53a  none  luks
+# swap: new random key every boot (no hibernation). By-id path pins the SSD by serial number,
+# so a renamed disk can never be turned into swap (that would destroy it).
+swap  /dev/disk/by-id/ata-SAMSUNG_MZMPC032HBCD-000L1_S0Y2NSAC634690-part3  /dev/urandom  swap,cipher=aes-xts-plain64,size=512,sector-size=4096

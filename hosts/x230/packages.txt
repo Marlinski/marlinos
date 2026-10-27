@@ -6,3 +6,6 @@ vulkan-intel
 libva-intel-driver
 bluez
 bluez-utils
+
+# data disk: LUKS2 + btrfs (docs/encryption.md)
+btrfs-progs
