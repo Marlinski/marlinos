@@ -1,5 +1,5 @@
 #!/bin/bash
-# Music: spotify_player in a floating terminal on the special workspace "music". Run again (click
+# Music: spotify_player in a terminal on the special workspace "music". Run again (click
 # the note in the bar, or Super+M) to hide or show it; it keeps playing while hidden.
 if hyprctl clients | grep -q 'class: music$'; then
   exec hyprctl dispatch togglespecialworkspace music >/dev/null
