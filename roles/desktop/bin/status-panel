@@ -33,6 +33,7 @@ draw() {
       local name key endpoint allowed hs rx tx ip age color ms
       while read -r name key endpoint allowed hs rx tx; do
         ip=${allowed%%/*}
+        [[ $allowed == */32 ]] || ip=${ip%.*}.1   # the hub routes the whole mesh; it sits on .1
         age=$(ago "$hs")
         if ((hs > 0 && $(date +%s) - hs < 180)); then color=$g; else color=$r; fi
         ms=$(ping -c1 -W1 "$ip" 2>/dev/null | sed -n 's/.*time=\([0-9.]*\).*/\1/p')
