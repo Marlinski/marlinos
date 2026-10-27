@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=Office
+Description=A cozy study at the window: the sun rises on boot, sets on shutdown (marlinos)
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/office
+ScriptFile=/usr/share/plymouth/themes/office/office.script
