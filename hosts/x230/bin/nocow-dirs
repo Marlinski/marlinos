@@ -1,0 +1,55 @@
+#!/bin/bash
+# No copy-on-write for the home directories that rewrite files in place (browser profiles,
+# emulator disks, desktop databases); ~/.cache becomes a nested subvolume, so @home snapshots skip it.
+# chattr +C only applies to files created afterwards: existing directories are rewritten.
+# The flag lives in the inodes and survives reboots; a tar restore loses it, so run this after one.
+# Idempotent. Close the apps that use these directories first.
+# Usage: nocow-dirs [HOME]   (as root after a restore: nocow-dirs /home/lucien)
+set -euo pipefail
+cd "${1:-$HOME}"
+
+DIRS=(
+  .config/google-chrome
+  .config/chromium
+  .mozilla
+  .android
+  .local/share/zeitgeist
+  .local/share/tracker
+  .local/share/rhythmbox
+)
+
+nocow() { lsattr -d "$1" | cut -d' ' -f1 | grep -q C; }
+is_subvol() { [[ $(stat -c %i "$1") == 256 ]]; }
+
+make_dir() {   # make_dir DIR KIND REFERENCE
+  if [[ $2 == subvol ]]; then btrfs subvolume create "$1" >/dev/null; else mkdir -p "$1"; fi
+  chown --reference="$3" "$1"
+  chmod --reference="$3" "$1"
+  chattr +C "$1"
+}
+
+convert() {   # convert DIR [subvol]
+  local d=$1 kind=${2:-dir}
+  if [[ ! -e $d ]]; then             # not there yet: create it, future files inherit No_COW
+    make_dir "$d" "$kind" "$(dirname "$d")"
+    echo "new  $d"
+    return
+  fi
+  if nocow "$d" && { [[ $kind == dir ]] || is_subvol "$d"; }; then
+    echo "ok   $d"
+    return
+  fi
+  local old=$d.cow-old
+  mv "$d" "$old"
+  make_dir "$d" "$kind" "$old"
+  cp -a --reflink=never "$old/." "$d/"
+  if [[ $(find "$old" | wc -l) != $(find "$d" | wc -l) ]]; then
+    echo "!!   $d: copy incomplete, original kept at $old" >&2
+    return 1
+  fi
+  rm -rf "$old"
+  echo "done $d ($kind)"
+}
+
+convert .cache subvol
+for d in "${DIRS[@]}"; do convert "$d"; done
