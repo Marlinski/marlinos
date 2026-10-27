@@ -7,7 +7,7 @@
 #
 #   internet: ssh (4242), WireGuard (udp 51821), ping
 #   wg0 (10.77.0.0/24, our WireGuard peers): everything on minix, and each other
-#   LAN:      + k3s API, docker-published ports (IOU), traefik, mDNS / SSDP
+#   LAN:      + k3s API, 4444 (ad-hoc: nc, test servers), docker-published ports (IOU), traefik, mDNS / SSDP
 #   docker / k3s networks: everything (pods and containers talk to host services)
 #
 # Loaded by firewall.service. Re-running this file replaces the table in one step.
@@ -50,8 +50,9 @@ table inet firewall {
         udp dport 51821 accept
         iifname "wg0" accept
 
-        # LAN only: k3s API, mDNS, SSDP
+        # LAN only: k3s API, 4444 for ad-hoc use (nc, a test server), mDNS, SSDP
         ip saddr @lan4 tcp dport 6443 accept
+        ip saddr @lan4 meta l4proto { tcp, udp } th dport 4444 accept
         ip daddr 224.0.0.251 udp dport 5353 accept
         ip6 daddr ff02::fb udp dport 5353 accept
         ip saddr @lan4 ip daddr 239.255.255.250 udp dport 1900 accept
