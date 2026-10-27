@@ -1,0 +1,47 @@
+#!/bin/bash
+# Move the focused window like i3. If there is a window in that direction, move into it. If not,
+# the window goes to that edge of the workspace, across its whole width (up/down) or height
+# (left/right), and the other windows share the rest: three windows, move one down -> two side by
+# side on top, that one below.
+dir=${1:?usage: hypr-move l|r|u|d}
+h() { hyprctl "$@" >/dev/null; sleep 0.05; }
+me=$(hyprctl activewindow -j | jq -r .address)
+[[ $me == 0x* ]] || exit 0
+ws=$(hyprctl activewindow -j | jq -r .workspace.id)
+tiled() { hyprctl clients -j | jq -r --argjson ws "$ws" \
+  '.[] | select(.workspace.id == $ws and (.floating | not)) | "\(.address) \(.at[0]) \(.at[1]) \(.size[0]) \(.size[1])"'; }
+geo() { tiled | awk -v a="$1" '$1 == a { print $2, $3, $4, $5 }'; }
+
+bbox() { tiled | awk 'NR == 1 { a = $2; b = $3; c = $2 + $4; d = $3 + $5 }
+  { if ($2 < a) a = $2; if ($3 < b) b = $3; if ($2 + $4 > c) c = $2 + $4; if ($3 + $5 > d) d = $3 + $5 }
+  END { print a, b, c, d }'; }
+spans() {  # is the window already across the whole workspace, in the direction of the move?
+  read -r minx miny maxx maxy < <(bbox)
+  read -r x y w hh < <(geo "$me")
+  case $dir in u | d) ((w >= maxx - minx - 2)) ;; l | r) ((hh >= maxy - miny - 2)) ;; esac
+}
+place() {  # the window at the asked edge of the root split, the others side by side / stacked
+  spans || h dispatch layoutmsg togglesplit
+  read -r x y w hh < <(geo "$me")
+  case $dir in
+    d) ((y == miny)) ;; u) ((y > miny)) ;; r) ((x == minx)) ;; l) ((x > minx)) ;;
+  esac && h dispatch layoutmsg swapsplit
+  mapfile -t others < <(tiled | awk -v a="$me" '$1 != a')
+  if ((${#others[@]} == 2)); then
+    read -r a ax ay _ <<<"${others[0]}"
+    read -r _ bx by _ <<<"${others[1]}"
+    case $dir in
+      u | d) ((ax == bx)) ;; l | r) ((ay == by)) ;;
+    esac && { h dispatch focuswindow "address:$a"; h dispatch layoutmsg togglesplit; h dispatch focuswindow "address:$me"; }
+  fi
+  return 0
+}
+
+if (($(tiled | wc -l) > 1)) && spans; then place; exit 0; fi   # already a full-width/height edge: just change side
+read -r minx miny maxx maxy < <(bbox)
+read -r x y w hh < <(geo "$me")
+case $dir in   # a window on that side: move into it
+  r) ((x + w < maxx - 2)) ;; l) ((x > minx + 2)) ;; d) ((y + hh < maxy - 2)) ;; u) ((y > miny + 2)) ;;
+esac && { h dispatch movewindow "$dir"; exit 0; }
+h dispatch layoutmsg movetoroot   # already at that edge: take the whole side
+place
