@@ -20,4 +20,5 @@ docker-compose
 docker-buildx
 fail2ban
 nftables
+wireguard-tools
 # docker: log rotation, public DNS, fixed bridge subnet (system/etc/docker/daemon.json)

@@ -9,3 +9,6 @@ bluez-utils
 
 # data disk: LUKS2 + btrfs (docs/encryption.md)
 btrfs-progs
+
+# WireGuard client of minix (system/etc/wireguard/wg0.conf)
+wireguard-tools

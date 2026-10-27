@@ -5,7 +5,8 @@
 # them and only adds drops. A packet must pass every table on a hook, so nothing here can
 # open what they close, and loading or deleting this table never touches their rules.
 #
-#   internet: ssh (4242), ping
+#   internet: ssh (4242), WireGuard (udp 51821), ping
+#   wg0 (10.77.0.0/24, our WireGuard peers): everything on minix, and each other
 #   LAN:      + k3s API, docker-published ports (IOU), traefik, mDNS / SSDP
 #   docker / k3s networks: everything (pods and containers talk to host services)
 #
@@ -44,6 +45,10 @@ table inet firewall {
 
         # ssh, from anywhere (fail2ban bans in its own chain still apply)
         tcp dport 4242 accept
+
+        # WireGuard: the tunnel from anywhere, and whatever comes through it
+        udp dport 51821 accept
+        iifname "wg0" accept
 
         # LAN only: k3s API, mDNS, SSDP
         ip saddr @lan4 tcp dport 6443 accept
