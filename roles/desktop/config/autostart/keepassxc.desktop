@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=Application
 Name=KeePassXC
-Comment=Password manager, in the tray so the browser extension can reach it
-Exec=keepassxc --minimized
+Comment=Password manager, started on workspace 10 so the browser extension can reach it (no tray icon)
+Exec=hyprctl dispatch exec "[workspace 10 silent] uwsm app -- keepassxc"
 Icon=keepassxc
 X-GNOME-Autostart-enabled=true
