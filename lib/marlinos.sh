@@ -162,6 +162,18 @@ ensure_grub_microcode() {
   sudo grub-mkconfig -o /boot/grub/grub.cfg
 }
 
+# /etc/resolv.conf -> systemd-resolved's stub, once resolved is enabled (common/services.txt).
+# NetworkManager then hands it each connection's DNS; connections stay up through the switch.
+ensure_resolved_stub() {
+  systemctl is-enabled -q systemd-resolved 2>/dev/null || return 0
+  [[ $(readlink /etc/resolv.conf) == ../run/systemd/resolve/stub-resolv.conf ]] && return 0
+  step "DNS: systemd-resolved"
+  sudo systemctl start systemd-resolved
+  sudo ln -sf ../run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+  sudo nmcli general reload conf,dns-rc
+  info "/etc/resolv.conf -> systemd-resolved"
+}
+
 enable_services() {
   step "Services"
   local u

@@ -1,1 +1,3 @@
 NetworkManager.service
+# per-link DNS (system/etc/systemd/resolved.conf.d): split DNS for the WireGuard mesh
+systemd-resolved.service

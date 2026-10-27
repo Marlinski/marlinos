@@ -29,6 +29,7 @@ install_aur_packages
 apply_system_files
 ensure_grub_microcode
 enable_services
+ensure_resolved_stub
 link_configs
 check_hyprland_config
 reload_session

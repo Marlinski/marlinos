@@ -11,4 +11,5 @@ stop-k3s-pods.service
 firewall.service
 # WireGuard hub (system/etc/wireguard/wg0.conf, key in /etc/wireguard/wg0.key)
 wg-quick@wg0.service
+dnsmasq.service
 # k3s.service comes from the k3s install script (/usr/local/bin/k3s), not a package
