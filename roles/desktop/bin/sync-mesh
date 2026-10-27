@@ -29,4 +29,16 @@ if ! api config/folders/keepass &>/dev/null; then
     '{id: "keepass", label: "KeePass", path: $p, devices: [{deviceID: $me}],
       versioning: {type: "simple", params: {keep: "10"}}}')"
 fi
+# KeePassXC opens the synced database at startup: its local state (2.8 keeps it in
+# ~/.local/state, 2.7 in ~/.cache) gets the path unless it already knows a database.
+# The settings themselves are in the repo. Run with KeePassXC closed: it rewrites this on exit.
+db=~/.local/share/keepass/Passwords.kdbx
+for state in ~/.local/state/keepassxc/keepassxc.ini ~/.cache/keepassxc/keepassxc.ini; do
+  grep -qs '\.kdbx' "$state" && continue
+  mkdir -p "${state%/*}"
+  { printf '[General]\nLastActiveDatabase=%s\nLastDatabases=%s\nLastOpenedDatabases=%s\nLastDir=%s\n' \
+      "$db" "$db" "$db" "${db%/*}"
+    grep -sv -e '^\[General\]' -e '^Last' "$state" || true; } >"$state.new"
+  mv "$state.new" "$state"
+done
 echo "$(hostname)  $me"

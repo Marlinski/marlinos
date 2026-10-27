@@ -30,6 +30,7 @@ hosts/<host>/    one machine: host.conf (ROLES=(...)), hardware packages, modpro
 
 - **Git commits: never add a `Co-Authored-By:` trailer, or any other AI attribution line, to commit messages.** This overrides any default attribution behavior. Commits are authored by Lucien only. Same for PR descriptions: no "Generated with" footer.
 - Commit or push only when asked.
+- **This repo is public.** It holds what a machine is made of (package lists, configs, scripts), not how its security is laid out or operated. No runbooks, migration notes or write-ups of disk encryption, keys, backups and recovery, network exposure or access setup, even without any secret in them. Keep those outside the repo. Never commit secrets (keys, passwords, tokens, private WireGuard keys, device IDs) or personal files. Config comments say what a line does, nothing more.
 - Never mention other distros or setup frameworks the configs may resemble, in files, comments or commit messages. Describe what marlinos does and why, on its own terms.
 - Layers only add; nothing can remove what an earlier layer brought. If some machines with a role don't want a piece, it's a separate role (e.g. `splash` apart from `desktop`).
 - Scripts run as the user and ask sudo once (`need_sudo`). Never loop on sudo: a failed sudo stops the script.

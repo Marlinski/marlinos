@@ -7,7 +7,7 @@ libva-intel-driver
 bluez
 bluez-utils
 
-# data disk: LUKS2 + btrfs (docs/encryption.md)
+# data disk: LUKS2 + btrfs
 btrfs-progs
 
 # WireGuard client of minix (system/etc/wireguard/wg0.conf)
