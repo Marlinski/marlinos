@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Unlock sudo
+Comment=Clear the lockout after too many wrong passwords
+Exec=/usr/local/bin/unlock-sudo
+Icon=dialog-password
+Terminal=false

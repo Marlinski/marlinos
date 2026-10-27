@@ -1,0 +1,4 @@
+#!/bin/bash
+# Clear the failed-password counter that blocks sudo (and polkit) for 10 minutes after 3 wrong
+# attempts (pam_faillock). The counter file belongs to the user, so no password is needed.
+faillock --user "$USER" --reset && notify-send -i dialog-password "sudo unlocked" "Failed password attempts cleared."
