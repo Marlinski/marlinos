@@ -1,0 +1,5 @@
+[Desktop Entry]
+# no tray icon: remmina opens from the launcher or remote-help
+Type=Application
+Name=remmina-applet
+Hidden=true

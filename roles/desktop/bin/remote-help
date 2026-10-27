@@ -1,0 +1,6 @@
+#!/bin/bash
+# Take over a mesh machine's desktop to help: remote-help jeanne
+# The machine shares its GNOME session over RDP (user "help"), reachable only through WireGuard.
+# Remmina asks for the password the first time and can keep it in the keyring.
+host=${1:?usage: remote-help <mesh host>}
+exec uwsm app -- remmina -c "rdp://help@${host%.mesh}.mesh"

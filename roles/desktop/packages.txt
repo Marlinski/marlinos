@@ -76,10 +76,23 @@ cups-pk-helper
 system-config-printer
 avahi
 nss-mdns
-blueman
+# bluetooth: bluetui, a TUI like nmtui (scan, pair, connect)
+bluetui
 
 # browser next to Chrome (hardened: system/etc/firefox/policies)
 firefox
+
+# passwords: KeePassXC (browser extension for Firefox and Chrome), the database synced by
+# Syncthing between the machines and the phone, over the mesh only
+keepassxc
+syncthing
+
+# encrypted containers (cryptsetup opens VeraCrypt volumes too, without the GUI)
+veracrypt
+
+# remote desktop: helping on the mesh machines (jeanne shares her GNOME session over RDP)
+remmina
+freerdp
 
 # media, images
 vlc

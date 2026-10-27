@@ -2,3 +2,5 @@ power-profiles-daemon.service
 getty@tty1.service
 # control center: WireGuard peer status (only runs alongside wg-quick@wg0)
 wg-status.service
+# keeps ~/.local/share/keepass in sync with the other machines and the phone (config: bin/sync-mesh)
+syncthing@@USER@.service

@@ -1,0 +1,32 @@
+#!/bin/bash
+# Syncthing over the WireGuard mesh only: no discovery servers, relays, NAT punching or usage
+# reports; peers are reached at <name>.mesh. Shares ~/.local/share/keepass (the KeePassXC
+# database), keeping the last 10 versions of each file.
+#   sync-mesh                    apply the options, create the folder, print this device's ID
+#   sync-mesh add <name> <id>    add a mesh machine (its .mesh name) and share the folder with it
+set -euo pipefail
+key=$(syncthing cli config gui apikey get)
+api() { curl -fsS -H "X-API-Key: $key" "http://127.0.0.1:8384/rest/$1" "${@:2}"; }
+me=$(api system/status | jq -r .myID)
+
+if [[ ${1:-} == add ]]; then
+  name=${2:?usage: sync-mesh add <name> <device-id>} id=${3:?usage: sync-mesh add <name> <device-id>}
+  api config/devices -X POST -d "$(jq -n --arg id "$id" --arg n "${name%.mesh}" \
+    '{deviceID: $id, name: $n, addresses: ["tcp://\($n).mesh:22000"]}')"
+  api config/folders/keepass | jq --arg id "$id" '.devices |= (map(select(.deviceID != $id)) + [{deviceID: $id}])' |
+    api config/folders/keepass -X PUT -d @-
+  echo "added ${name%.mesh}, sharing the keepass folder with it"
+  exit
+fi
+
+api config/options -X PATCH -d '{
+  "globalAnnounceEnabled": false, "localAnnounceEnabled": false, "relaysEnabled": false,
+  "natEnabled": false, "urAccepted": -1, "crashReportingEnabled": false, "startBrowser": false,
+  "listenAddresses": ["tcp://:22000"]}'
+if ! api config/folders/keepass &>/dev/null; then
+  mkdir -p ~/.local/share/keepass
+  api config/folders -X POST -d "$(jq -n --arg p "$HOME/.local/share/keepass" --arg me "$me" \
+    '{id: "keepass", label: "KeePass", path: $p, devices: [{deviceID: $me}],
+      versioning: {type: "simple", params: {keep: "10"}}}')"
+fi
+echo "$(hostname)  $me"

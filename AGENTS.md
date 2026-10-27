@@ -15,7 +15,7 @@ hosts/<host>/    one machine: host.conf (ROLES=(...)), hardware packages, modpro
 ```
 
 - Host = `/etc/hostname` (override: `MARLINOS_HOST`). Hosts: `x230` (ThinkPad X230, desktop), `minix` (Minix Z300, desktop + home server, usually headless over ssh).
-- Every layer may contain: `packages.txt`, `aur.txt`, `services.txt` (lists, `#` comments), `config/<app>` → `~/.config/<app>`, `home/<dotfile>` → `~/<dotfile>`, `bin/<script>` → `~/.local/bin/` (symlinks), `system/...` → `/...` (copied as root, `@USER@` replaced, diffed and backed up to `/var/backups/marlinos/<date>/`).
+- Every layer may contain: `packages.txt`, `aur.txt`, `services.txt` (lists, `#` comments; `@USER@` in a service name is the user), `config/<app>` → `~/.config/<app>`, `home/<dotfile>` → `~/<dotfile>`, `bin/<script>` → `~/.local/bin/` (symlinks), `system/...` → `/...` (copied as root, `@USER@` replaced, diffed and backed up to `/var/backups/marlinos/<date>/`).
 - Hardware-specific things go in `hosts/<host>/` only. If it isn't true for every machine with that role, it doesn't belong in common/ or roles/.
 - The host layer is linked at `~/.config/marlinos/host`. `roles/desktop` hyprland.conf sources `~/.config/marlinos/host/hypr.conf`, so every desktop host needs that file (monitors etc.).
 - `lib/marlinos.sh`: all logic. `bin/` (on PATH via `~/.local/bin`):

@@ -4,7 +4,7 @@
   "height": 24,
   "modules-left": ["hyprland/workspaces"],
   "modules-center": ["clock"],
-  "modules-right": ["tray", "pulseaudio", "backlight", "network", "cpu", "memory", "battery"],
+  "modules-right": ["tray", "pulseaudio", "backlight", "network", "bluetooth", "cpu", "memory", "battery"],
 
   "hyprland/workspaces": {
     "on-click": "activate",
@@ -30,6 +30,20 @@
     "format-disconnected": "󰖪 off",
     "tooltip-format": "{ifname} {ipaddr} {bandwidthDownBytes}↓ {bandwidthUpBytes}↑",
     "on-click": "alacritty -e nmtui"
+  },
+  "bluetooth": {
+    "format": "󰂯",
+    "format-off": "󰂲",
+    "format-disabled": "󰂲",
+    "format-no-controller": "",
+    "format-connected": "󰂱 {device_alias}",
+    "format-connected-battery": "󰂱 {device_alias} {device_battery_percentage}%",
+    "tooltip-format": "{controller_alias}: {status}",
+    "tooltip-format-connected": "{device_enumerate}",
+    "tooltip-format-enumerate-connected": "{device_alias}",
+    "tooltip-format-enumerate-connected-battery": "{device_alias} {device_battery_percentage}%",
+    "on-click": "uwsm app -- alacritty --class bluetui --title Bluetooth -e bluetui",
+    "on-click-right": "bluetoothctl show | grep -q 'Powered: yes' && bluetoothctl power off || bluetoothctl power on"
   },
   "cpu": { "format": "󰻠 {usage}%", "interval": 5, "on-click": "~/.local/bin/control-center" },
   "memory": { "format": "󰍛 {percentage}%", "interval": 10 },

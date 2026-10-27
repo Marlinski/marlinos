@@ -3,7 +3,7 @@
 # A machine is built from layers, applied in order:
 #   common/  ->  roles/<role>/ (listed in hosts/<host>/host.conf)  ->  hosts/<host>/
 # Each layer may contain:
-#   packages.txt  aur.txt  services.txt   lists, one item per line, # comments
+#   packages.txt  aur.txt  services.txt   lists, one item per line, # comments (@USER@ in services)
 #   config/<app>  -> ~/.config/<app>      (symlinked)
 #   home/<file>   -> ~/<file>             (symlinked)
 #   bin/<script>  -> ~/.local/bin/<script> (symlinked)
@@ -178,9 +178,10 @@ enable_services() {
   step "Services"
   local u
   for u in $(layer_list services.txt); do
+    u=${u//@USER@/$USER}   # syncthing@@USER@.service
     if [[ $(systemctl is-enabled "$u" 2>/dev/null) != enabled ]]; then
-      sudo systemctl enable "$u"
-      info "enabled $u"
+      sudo systemctl enable --now "$u"
+      info "enabled and started $u"
     fi
   done
   info "ok"

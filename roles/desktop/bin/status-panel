@@ -1,6 +1,7 @@
 #!/bin/bash
-# The control center's right-hand panel, redrawn every 5 s: this machine, its addresses,
-# the WireGuard mesh, disks, failed services (and docker / k3s where they run).
+# The control center's bottom panel, redrawn every 5 s, in three columns: this machine and its
+# addresses | the WireGuard mesh | disks, failed services (and docker / k3s where they run).
+# On a narrow terminal the columns stack.
 b=$'\e[1;34m' g=$'\e[32m' y=$'\e[33m' r=$'\e[31m' d=$'\e[90m' n=$'\e[0m'
 
 human() {  # bytes -> 1.2G
@@ -14,37 +15,55 @@ ago() {  # seconds since a unix time, or "never"
   if ((s < 120)); then echo "${s}s"; elif ((s < 7200)); then echo "$((s / 60))m"; else echo "$((s / 3600))h"; fi
 }
 
-section() { printf '\n%s%s%s\n' "$b" "$1" "$n"; }
+section() { printf '%s%s%s\n' "$b" "$1" "$n"; }
 
-draw() {
+block_system() {
   printf '%s%s%s  %s\n' "$b" "$(hostname)" "$n" "$(uptime -p | sed 's/^up //')"
   printf '%sload %s%s\n' "$d" "$(cut -d' ' -f1-3 /proc/loadavg)" "$n"
 
+  echo
   section "Network"
   ip -br -4 addr | awk '$1 !~ /^(lo|docker|br-|veth|cni|flannel)/ { printf "  %-10s %s\n", $1, $3 }'
   ip route show default | awk '{ printf "  %-10s via %s\n", "default", $3; exit }'
+}
 
+block_mesh() {
   section "WireGuard mesh"
   if ! ip link show wg0 &>/dev/null; then
     echo "  ${d}no wg0 here${n}"
   else
-    printf '  %-10s %s %s(me)%s\n' "$(hostname)" "$(ip -br -4 addr show wg0 | awk '{print $3}' | cut -d/ -f1)" "$d" "$n"
+    printf '    %-8s %-10s %s(me)%s\n' "$(hostname)" "$(ip -br -4 addr show wg0 | awk '{print $3}' | cut -d/ -f1)" "$d" "$n"
     if [[ -r /run/wg-status/wg0 ]]; then
-      local name key endpoint allowed hs rx tx ip age color ms
+      local name key endpoint allowed hs rx tx ip age color ms hub=
+      local -A shown=([$(hostname)]=1)
       while read -r name key endpoint allowed hs rx tx; do
         ip=${allowed%%/*}
-        [[ $allowed == */32 ]] || ip=${ip%.*}.1   # the hub routes the whole mesh; it sits on .1
+        [[ $allowed == */32 ]] || { ip=${ip%.*}.1; hub=$name; }   # the hub routes the whole mesh; it sits on .1
+        shown[$name]=1
         age=$(ago "$hs")
         if ((hs > 0 && $(date +%s) - hs < 180)); then color=$g; else color=$r; fi
         ms=$(ping -c1 -W1 "$ip" 2>/dev/null | sed -n 's/.*time=\([0-9.]*\).*/\1/p')
         printf '  %s●%s %-8s %-10s %5s %s%s%s\n' "$color" "$n" "$name" "$ip" "$age" "$d" \
           "${ms:+${ms%.*}ms }$(human "$rx")↓ $(human "$tx")↑" "$n"
       done < /run/wg-status/wg0
+      # a spoke only has the hub as a peer: the other members come from the hub's DNS records
+      # (in the repo) and are pinged through it
+      if [[ -n $hub && -r $mesh_hosts ]]; then
+        sed -n 's/^host-record=\([^.]*\)\.mesh,\(.*\)/\1 \2/p' "$mesh_hosts" | while read -r name ip; do
+          [[ -n ${shown[$name]:-} ]] && continue
+          ms=$(ping -c1 -W1 "$ip" 2>/dev/null | sed -n 's/.*time=\([0-9.]*\).*/\1/p')
+          if [[ -n $ms ]]; then color=$g; else color=$r; fi
+          printf '  %s●%s %-8s %-10s %5s %s%s%s\n' "$color" "$n" "$name" "$ip" "" "$d" \
+            "${ms:+${ms%.*}ms }via $hub" "$n"
+        done
+      fi
     else
       echo "  ${d}(peer status: sudo systemctl start wg-status)${n}"
     fi
   fi
+}
 
+block_health() {
   section "Disks"
   df -h -x tmpfs -x devtmpfs -x efivarfs -x overlay --output=target,used,size,pcent 2>/dev/null |
     awk 'NR > 1 && $1 !~ /^\/(boot|var\/lib)/ { printf "  %-14s %6s / %-6s %s\n", $1, $2, $3, $4 }'
@@ -53,6 +72,7 @@ draw() {
     local pods
     pods=$(timeout 3 kubectl get pods -A --no-headers 2>/dev/null)
     if [[ -n $pods ]]; then
+      echo
       section "k3s"
       echo "$pods" | awk '{ t++; if ($4 == "Running" || $4 == "Completed") ok++; else bad = bad " " $2 }
         END { printf "  %d/%d pods running%s\n", ok, t, (bad ? "\n  \033[31mnot ready:" bad "\033[0m" : "") }'
@@ -61,11 +81,13 @@ draw() {
   if systemctl is-active -q docker 2>/dev/null; then
     local c
     if c=$(timeout 3 docker ps --format '{{.Names}}' 2>/dev/null); then
+      echo
       section "Docker"
       echo "  $(echo "$c" | grep -c .) containers up"
     fi
   fi
 
+  echo
   section "Services"
   local failed
   failed=$(systemctl --failed --no-legend --plain 2>/dev/null | awk '{print $1}')
@@ -76,12 +98,37 @@ draw() {
   fi
 }
 
+# Blocks side by side, each padded to its widest line (escape codes don't count), or stacked
+# when the terminal is too narrow.
+draw() {
+  local blocks=() f
+  for f in block_system block_mesh block_health; do blocks+=("$($f)"); done
+  local widths=() total=0 i
+  for i in "${!blocks[@]}"; do
+    widths[i]=$(printf '%s\n' "${blocks[i]}" | sed 's/\x1b\[[0-9;]*m//g' | awk '{ if (length > m) m = length } END { print m + 0 }')
+    total=$((total + widths[i] + 6))
+  done
+  if ((total > $(tput cols 2>/dev/null || echo 80))); then
+    printf '%s\n\n' "${blocks[@]}"
+    return
+  fi
+  paste -d $'\x1c' <(printf '%s\n' "${blocks[0]}") <(printf '%s\n' "${blocks[1]}") <(printf '%s\n' "${blocks[2]}") |
+    awk -F $'\x1c' -v w0="${widths[0]}" -v w1="${widths[1]}" '
+      function pad(s, w,   v) { v = s; gsub(/\033\[[0-9;]*m/, "", v); return s sprintf("%*s", w - length(v) + 6, "") }
+      { print pad($1, w0) pad($2, w1) $3 }'
+}
+
 export KUBECONFIG=${KUBECONFIG:-$HOME/.kube/config}
+mesh_hosts=$(dirname "$(readlink -f "$0")")/../../../hosts/minix/system/etc/dnsmasq.conf
 [[ ${1:-} == --once ]] && { draw; exit; }   # one frame, for testing
+fit() { [[ -n ${TMUX_PANE:-} ]] && tmux resize-pane -t "$TMUX_PANE" -y "$1" 2>/dev/null; }
 tput civis
 trap 'tput cnorm' EXIT
+fit 12   # right away; then to the frame's real height
 while :; do
   frame=$(draw)
+  # in the control center: the pane is as tall as the frame, btop gets the rest
+  fit $(($(wc -l <<<"$frame") + 1))
   printf '\e[H\e[2J%s' "$frame"
   sleep 5
 done

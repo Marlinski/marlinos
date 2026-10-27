@@ -2,6 +2,28 @@
 
 Newest first. One line of what, one line of why.
 
+## 2026-10-27: passwords off Google, remote help
+- **Passwords: KeePassXC**, one database (`~/.local/share/keepass/Passwords.kdbx`, out of sight),
+  imported from Google Password Manager and the old password notes. The browsers' own password
+  managers are off (Firefox and Chrome policies); the KeePassXC-Browser extension is installed in
+  both, connected through native-messaging manifests shipped in `system/` (so KeePassXC never
+  writes its own into the browser profiles). The phone uses KeePassDX on the same file.
+- **Sync: Syncthing over the mesh only** (`bin/sync-mesh`): no global/local discovery, relays,
+  NAT punching or usage reports; each peer is `tcp://<name>.mesh:22000`, so nothing syncs
+  outside WireGuard and no third-party server learns the devices. The folder keeps the last 10
+  versions of each file, a cheap undo for a bad merge. Device IDs and keys stay in each machine's
+  Syncthing state, not in the repo.
+- **Syncthing runs as the system template unit `syncthing@<user>`**: `services.txt` accepts
+  `@USER@`, and install now enables *and starts* the listed services.
+- **Remote help: GNOME desktop sharing (RDP)** on jeanne, of her own session, reachable only on
+  the mesh (her firewalld zone for the tunnel allows rdp); `remote-help <host>` opens it in
+  Remmina. No password is kept in cleartext anywhere: it lives in the keyrings.
+- **tmux and screen in Tokyo Night, no plugins** (`common/config/tmux/tmux.conf`, `common/home/.screenrc`):
+  the existing key bindings kept (prefix Ctrl+Space, Alt shortcuts), a pill-style bar, popups for
+  lazygit and a scratch shell; prefix s stays tmux's session tree with previews. screen 5 takes `#RRGGBB` colors (`truecolor on`).
+- **Bluetooth: bluetui** (a TUI, like nmtui) instead of blueman, and no tray applets: Remmina's
+  is hidden by `config/autostart/remmina-applet.desktop` (`Hidden=true`) and its tray setting off.
+
 ## 2026-10-27: package lists, shell, dev role
 - **Every installed package is listed in a layer, or it goes.** `marlinos-unlisted` is the review: what isn't listed is removed (or marked as a dependency when something listed needs it). Cleaned both machines (x230: 280 unlisted, from 2013 on).
 - **Official repos first, the AUR only when nothing else exists** (wl-screenrec, google-chrome, claude-code, minix's printer driver, urbanterror): AUR packages are unreviewed build scripts. Nix or Flatpak may replace these later.
@@ -58,4 +80,3 @@ Newest first. One line of what, one line of why.
 - 45 `.pacnew` files in /etc to merge (some from 2013).
 - `/etc/modprobe.d/modprobe.conf` i915 options (`i915_enable_rc6`, `i915_enable_fbc`, `lvds_downclock`) date from 2013 and are obsolete on current kernels; review.
 - Wifi card crashes (Intel 2200): memtest86+, `11n_disable=2` test, or swap for an Intel 6205.
-- nvim config (LazyVim starter in `~/.config/nvim`) not yet in the repo.

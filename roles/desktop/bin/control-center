@@ -1,5 +1,5 @@
 #!/bin/bash
-# Control center: btop next to the status panel (WireGuard mesh, addresses, disks, services),
+# Control center: btop above the status panel (WireGuard mesh, addresses, disks, services),
 # in one floating window. Run again (click the cpu icon again) to close it.
 if hyprctl clients | grep -q 'class: control-center$'; then
   hyprctl dispatch closewindow class:control-center >/dev/null
