@@ -18,7 +18,7 @@ window#waybar {
 #workspaces button.active { color: #7aa2f7; }
 #workspaces button.empty { color: #414868; }
 
-#clock, #tray, #custom-music, #pulseaudio, #backlight, #network, #bluetooth, #cpu, #memory, #battery {
+#clock, #tray, #custom-music, #pulseaudio, #backlight, #network, #bluetooth, #cpu, #battery {
   padding: 0 8px;
 }
 

@@ -4,7 +4,7 @@
   "height": 24,
   "modules-left": ["hyprland/workspaces"],
   "modules-center": ["clock"],
-  "modules-right": ["tray", "custom/music", "pulseaudio", "backlight", "network", "bluetooth", "cpu", "memory", "battery"],
+  "modules-right": ["tray", "custom/music", "pulseaudio", "backlight", "network", "bluetooth", "cpu", "battery"],
 
   "hyprland/workspaces": {
     "on-click": "activate",
@@ -55,7 +55,6 @@
     "on-click-right": "bluetoothctl show | grep -q 'Powered: yes' && bluetoothctl power off || bluetoothctl power on"
   },
   "cpu": { "format": "󰻠 {usage}%", "interval": 5, "on-click": "~/.local/bin/control-center" },
-  "memory": { "format": "󰍛 {percentage}%", "interval": 10 },
   "battery": {
     "states": { "warning": 25, "critical": 10 },
     "format": "{icon} {capacity}%",
