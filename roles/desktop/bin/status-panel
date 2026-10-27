@@ -32,7 +32,7 @@ block_mesh() {
   if ! ip link show wg0 &>/dev/null; then
     echo "  ${d}no wg0 here${n}"
   else
-    printf '    %-8s %-10s %s(me)%s\n' "$(hostname)" "$(ip -br -4 addr show wg0 | awk '{print $3}' | cut -d/ -f1)" "$d" "$n"
+    printf '  %s●%s %-8s %-10s %s(me)%s\n' "$g" "$n" "$(hostname)" "$(ip -br -4 addr show wg0 | awk '{print $3}' | cut -d/ -f1)" "$d" "$n"
     if [[ -r /run/wg-status/wg0 ]]; then
       local name key endpoint allowed hs rx tx ip age color ms hub=
       local -A shown=([$(hostname)]=1)
