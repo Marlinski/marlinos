@@ -219,6 +219,7 @@ link_configs() {
 install_nix_profiles() {
   command -v nix &>/dev/null || return 0
   local l name nixc=(nix --extra-experimental-features 'nix-command flakes')
+  "${nixc[@]}" store info >/dev/null   # the first connection makes the daemon create /nix/store
   for l in $(layers); do
     [[ -f $l/flake.nix ]] || continue
     name=$(basename "$l")
