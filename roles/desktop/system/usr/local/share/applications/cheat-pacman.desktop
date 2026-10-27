@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=pacman cheat sheet
+Comment=The basics of pacman, in a terminal
+Exec=alacritty --class cheat --title "pacman cheat sheet" -e cheat --page pacman
+Icon=accessories-dictionary
+Terminal=false
+Keywords=cheat;help;man;pacman;

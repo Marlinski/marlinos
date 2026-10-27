@@ -1,0 +1,69 @@
+# Emacs :: keys for the marlinos Emacs (built-ins only: fido, eglot, which-key). C = Ctrl, M = Alt
+
+## Survive
+C-g :: cancel whatever is happening (press it twice if needed)
+C-x C-c :: quit
+C-x C-f :: open a file (fido: type to narrow, Enter)
+C-x C-s / C-x s :: save / save all
+C-/ / C-? :: undo / redo
+M-x <command> :: run any command by name
+C-h k <key> :: what a key does; C-h f function, C-h v variable
+> type a prefix like C-x and wait: which-key lists what can follow
+
+## Moving
+C-f / C-b :: forward / back a character (M-f M-b: a word)
+C-n / C-p :: next / previous line
+C-a / C-e :: line start / end
+M-< / M-> :: top / bottom of the buffer
+C-v / M-v :: page down / up
+M-g g :: go to line
+C-l :: center the cursor line (again: top, bottom)
+C-s / C-r :: search forward / back (again: next match, Enter to stop)
+
+## Editing
+C-SPC :: start a selection (mark); move to extend it
+C-w / M-w :: cut / copy the selection
+C-y / M-y :: paste / then cycle older kills
+C-k :: cut to the end of the line
+C-d / M-d :: delete a character / a word
+M-% :: replace, asking at each match (y n !)
+C-x h :: select everything
+M-; :: comment / uncomment
+M-q :: refill the paragraph
+C-x C-x :: swap cursor and mark (reselect)
+
+## Buffers and windows
+C-x b :: switch buffer
+C-x C-b :: list buffers (ibuffer)
+C-x k :: kill a buffer
+C-x 2 / C-x 3 :: split below / right
+C-x o :: other window
+C-x 0 / C-x 1 :: close this window / close the others
+
+## Projects (marlinos keys)
+C-c p :: find a file in the project
+C-c g :: grep the project
+C-c f :: recent files
+C-x p p :: switch project; C-x p b project buffers
+
+## Code (eglot, flymake)
+M-. / M-, :: go to definition / back
+M-? :: references
+C-h . :: documentation at point
+M-x eglot-rename :: rename the symbol
+M-x eglot-code-actions :: code actions
+M-x eglot-format :: format the buffer
+M-g n / M-g p :: next / previous error (flymake)
+TAB :: indent, or complete when already indented
+
+## Files and git
+C-x d :: dired, a file browser (Enter, ^ up, d mark delete, x do it)
+C-x v = :: diff the file (vc)
+C-x v v :: commit the file
+C-x v l :: file history
+
+## Handy
+C-x C-e :: evaluate the Lisp before the cursor
+C-u <n> <command> :: repeat n times (C-u 8 C-n)
+F3 / F4 :: record a macro / stop, then F4 to play it
+M-x shell / M-x eshell :: a shell inside Emacs

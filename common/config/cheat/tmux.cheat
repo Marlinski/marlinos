@@ -1,0 +1,63 @@
+# tmux :: sessions, windows, panes (marlinos bindings: prefix Ctrl+Space, or Ctrl+b)
+
+## Sessions from the shell
+tmux :: new session
+tmux new -s <name> :: new named session
+tmux ls :: list sessions
+tmux a :: attach to the last session
+tmux a -t <name> :: attach to one
+tmux kill-session -t <name> :: end a session
+tmux kill-server :: end them all
+> detach with prefix d: everything keeps running, reattach later (also over ssh)
+
+## Sessions inside tmux
+prefix d :: detach
+prefix s :: session tree with previews (arrows, Enter; x kills)
+prefix w :: window tree with previews
+prefix C :: new session here
+prefix R :: rename session
+prefix K :: kill session
+Alt+Up / Alt+Down :: previous / next session
+prefix P / prefix N :: previous / next session
+
+## Windows (tabs)
+prefix c :: new window (same directory)
+Alt+1 … Alt+9 :: go to window n
+Alt+Left / Alt+Right :: previous / next window
+Alt+Shift+Left / Right :: move the window left / right
+prefix r :: rename window
+prefix k :: kill window
+> a window name in bold yellow had new output since you looked
+
+## Panes (splits)
+Alt+Enter / prefix h :: split, new pane below
+Alt+Shift+Enter / prefix v :: split, new pane on the right
+Ctrl+Alt+arrows :: move between panes
+Ctrl+Alt+Shift+arrows :: resize the pane
+prefix z :: zoom the pane (full window), again to unzoom
+Alt+Escape / prefix x :: kill pane
+prefix S :: type in all panes at once (sync), again to stop
+prefix ! :: turn the pane into its own window
+prefix space :: cycle layouts
+prefix q :: reload the config (marlinos: q is reload, not pane numbers)
+
+## Copy mode (vi keys)
+prefix [ :: enter copy mode (or scroll with the mouse)
+v / Ctrl+v :: start selection / rectangle
+y :: copy and leave (system clipboard too, over ssh: OSC 52)
+/ ? n N :: search down / up, next / previous match
+q :: leave copy mode
+prefix ] :: paste tmux's buffer
+
+## Popups
+prefix g :: lazygit in a popup
+prefix t :: a scratch shell in a popup (same directory)
+
+## Commands (prefix :)
+:new-window -n <name> <cmd> :: window running a command
+:swap-window -t <n> :: swap with window n
+:join-pane -s <win> :: bring a window in as a pane
+:setw synchronize-panes :: same as prefix S
+:resize-pane -D 10 :: resize by 10 lines (U D L R)
+:capture-pane -S -3000 ; save-buffer ~/tmux.log :: save scrollback to a file
+tmux send-keys -t <session>:<win> '<cmd>' Enter :: type into a pane from a script

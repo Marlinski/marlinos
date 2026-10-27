@@ -1,0 +1,58 @@
+# ssh :: remote shells, keys, tunnels, file copies
+
+## Connect
+ssh <user>@<host> :: log in (the mesh: ssh lucien@x230.mesh)
+ssh -p <port> <host> :: another port
+ssh <host> '<cmd>' :: run one command, print its output
+ssh -t <host> '<cmd>' :: same, with a terminal (sudo, htop)
+ssh -J <jump> <host> :: through a jump host
+mosh <host> :: survives roaming and sleep (needs mosh on both ends)
+~. :: (after Enter) kill a frozen session; `~?` lists escapes
+
+## Keys
+ssh-keygen -t ed25519 -C "<comment>" :: new key pair (~/.ssh/id_ed25519)
+ssh-copy-id <user>@<host> :: install your public key there
+ssh-add :: load the key into the agent (one passphrase per session)
+ssh-add -l :: keys in the agent
+ssh-keygen -p -f ~/.ssh/id_ed25519 :: change a key's passphrase
+ssh-keygen -R <host> :: forget a host key (after a reinstall)
+ssh-keygen -lf <file.pub> :: fingerprint of a key
+
+## ~/.ssh/config
+Host x230 :: an alias: then just `ssh x230`
+  HostName x230.mesh :: the real address
+  User lucien :: default user
+  Port 22 :: and port
+  IdentityFile ~/.ssh/id_ed25519 :: which key
+  ProxyJump <jump> :: always through a jump host
+  ForwardAgent yes :: use your agent on the remote (trusted hosts only)
+Host * :: defaults for every host (put it last)
+  ServerAliveInterval 30 :: keepalive, against idle drops
+
+## Tunnels
+ssh -L 8080:localhost:80 <host> :: local 8080 -> the remote's port 80
+ssh -L 5432:<db>:5432 <host> :: reach a machine behind the host
+ssh -R 9000:localhost:3000 <host> :: the remote's 9000 -> your port 3000
+ssh -D 1080 <host> :: SOCKS proxy on localhost:1080 (browser through the host)
+ssh -N -f -L <...> <host> :: tunnel only, in the background
+
+## Files
+scp <file> <host>:<dir>/ :: copy there (scp -r for directories)
+scp <host>:<path> . :: copy back
+rsync -avP <dir>/ <host>:<dir>/ :: sync a tree, resumable, with progress
+rsync -avP --delete <src>/ <host>:<dst>/ :: mirror (deletes extra files there)
+sftp <host> :: interactive file browser
+sshfs <host>:<dir> <mountpoint> :: mount a remote directory
+
+## Multiplexing (fast repeat connections)
+ControlMaster auto :: (in Host *) reuse one connection
+ControlPath ~/.ssh/cm-%r@%h:%p :: where its socket lives
+ControlPersist 10m :: keep it open 10 minutes after the last session
+ssh -O exit <host> :: close the shared connection
+
+## Server side
+sudo systemctl status sshd :: is it running
+journalctl -u sshd -f :: login attempts, live
+/etc/ssh/sshd_config :: PasswordAuthentication no, PermitRootLogin no
+sudo sshd -t :: check the config before restarting
+> keep a second session open while changing sshd: a mistake can lock you out

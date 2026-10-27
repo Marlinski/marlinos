@@ -1,0 +1,51 @@
+# git :: everyday commands, branches, undo, history (shortcuts: g, gcm, gcam, gcad; lazygit: tmux prefix g)
+
+## Everyday
+git status -sb :: what changed, short
+git diff :: unstaged changes; `--staged` for staged ones
+git add -p :: stage piece by piece (y n s q)
+git commit -m "<msg>" :: commit (alias gcm)
+git commit -am "<msg>" :: stage tracked files and commit (gcam)
+git commit --amend --no-edit :: add staged changes to the last commit (gcad edits the message)
+git pull --ff-only :: update, refuse surprise merges
+git push :: send; first time: `git push -u origin <branch>`
+
+## Branches
+git switch <branch> :: go to a branch
+git switch -c <branch> :: new branch from here
+git branch -vv :: branches with their upstream and last commit
+git branch -d <branch> :: delete a merged branch (-D: anyway)
+git merge <branch> :: merge into the current branch
+git rebase main :: replay this branch on top of main
+git rebase --continue / --abort :: after fixing conflicts / give up
+git cherry-pick <sha> :: copy one commit here
+
+## Undo
+git restore <file> :: drop unstaged changes to a file
+git restore --staged <file> :: unstage, keep the changes
+git reset --soft HEAD~1 :: undo the last commit, keep its changes staged
+git revert <sha> :: a new commit that undoes one (safe once pushed)
+git stash / git stash pop :: shelve changes / bring them back
+git stash list :: what is shelved
+git reflog :: everywhere HEAD has been: find "lost" commits
+git reset --hard <sha> :: move the branch there, DROP local changes
+
+## History
+git log --oneline --graph --all :: the whole tree, compact
+git log -p <file> :: every change to a file
+git log -S "<text>" :: commits that added or removed that text
+git blame <file> :: who changed each line, and when
+git show <sha> :: one commit with its diff
+git diff <a>..<b> --stat :: what changed between two commits
+
+## Remotes
+git remote -v :: where push and pull go
+git fetch --prune :: update remote branches, forget deleted ones
+git push --force-with-lease :: force, unless someone else pushed meanwhile
+gh pr create / gh pr checkout <n> :: GitHub pull requests from the terminal
+
+## Handy
+git clean -nd :: list untracked files (`-fd` deletes them)
+git worktree add ../<dir> <branch> :: a second checkout of the same repo
+git bisect start; git bisect bad; git bisect good <sha> :: find the commit that broke something
+git config --global <key> <value> :: user.name, user.email, pull.ff only

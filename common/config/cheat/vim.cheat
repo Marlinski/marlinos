@@ -1,0 +1,81 @@
+# Vim / Neovim :: modes, motions, edits, and the marlinos neovim keys (leader = Space)
+
+## Modes and files
+i / a / o :: insert before cursor / after / on a new line below (O above)
+Esc :: back to normal mode (also clears search highlight)
+:w / :q / :wq / :q! :: save / quit / both / quit without saving
+:e <file> :: open a file
+v / V / Ctrl+v :: select characters / lines / a block
+:<n> :: go to line n (or <n>G)
+u / Ctrl+r :: undo / redo
+. :: repeat the last change
+
+## Moving
+h j k l :: left down up right
+w / b / e :: next word / back / end of word (W B E: by spaces)
+0 / ^ / $ :: line start / first character / line end
+gg / G :: top / bottom of the file
+f<c> / t<c> :: to / just before a character on the line (; , repeat)
+% :: matching bracket
+{ / } :: previous / next blank line (paragraph)
+Ctrl+d / Ctrl+u :: half a page down / up
+* / # :: next / previous occurrence of the word under the cursor
+Ctrl+o / Ctrl+i :: back / forward in the jump list
+
+## Editing (operator + motion)
+d<motion> / dd :: delete (cut) / a whole line
+c<motion> / cc :: change: delete and insert
+y<motion> / yy :: copy (yank) / a line
+p / P :: paste after / before
+ciw / ci" / ci( :: change inside word / quotes / parens (a instead of i: around)
+dap / yip :: delete a paragraph / copy inside one
+>> / << :: indent / unindent (in visual: > < keep the selection)
+x / r<c> :: delete a character / replace it
+J :: join the next line
+gc<motion> / gcc :: comment / a line
+~ :: toggle case
+
+## Search and replace
+/<text> / ?<text> :: search down / up; n N next / previous
+:%s/<old>/<new>/g :: replace everywhere (add c to confirm each)
+:s/<old>/<new>/g :: on this line (or the selection)
+:g/<text>/d :: delete every matching line
+
+## Files, buffers, windows (marlinos)
+Space Space :: find files
+Space / :: grep the project
+Space , :: open buffers
+Space fr / fw / fh / fk :: recent files / grep word / help / keymaps
+Space f. :: resume the last search
+- :: file browser of the current directory (oil: edit it like text, :w applies)
+Shift+h / Shift+l :: previous / next buffer
+Ctrl+h j k l :: move between split windows
+:sp / :vsp :: split horizontal / vertical; Ctrl+w q closes one
+
+## Code (LSP)
+gd :: go to definition
+K :: documentation under the cursor
+grn / gra :: rename / code action
+grr / gri :: references / implementations
+[d / ]d :: previous / next diagnostic; Space cl shows it
+Space cf :: format (file or selection)
+Space cs / cS :: symbols in the file / the project
+Space cd / cD :: diagnostics in the file / the project
+Space uh :: toggle inline type hints
+Ctrl+s :: (insert) signature help
+
+## Git (gitsigns)
+]h / [h :: next / previous changed hunk
+Space gs / gr :: stage / reset the hunk
+Space gp :: preview the hunk
+Space gb :: toggle blame on the line
+Space gd :: diff the file
+Space gc / gS :: commits / status (fzf)
+
+## Macros and registers
+q<r> … q :: record a macro into register r
+@<r> / @@ :: play it / again (5@r: five times)
+"<r>y / "<r>p :: yank into / paste from a register
+"+y / "+p :: system clipboard
+:reg :: show registers
+> press Space and wait: which-key lists every marlinos mapping

@@ -1,0 +1,68 @@
+# Nix :: packages, flakes and dev shells (Nix on Arch, flakes on)
+
+## Try a program, install nothing
+nix run nixpkgs#<pkg> :: run it once (`nix run nixpkgs#cowsay -- hi`)
+nix shell nixpkgs#<a> nixpkgs#<b> :: a shell with those programs on PATH; gone on exit
+nix search nixpkgs <word> :: find packages (name and description)
+> https://search.nixos.org/packages: the same search, with versions and options
+
+## Your profile (the dev role lives here as "dev")
+nix profile list :: what is installed, with names and store paths
+nix profile add nixpkgs#<pkg> :: install for your user (outside marlinos)
+nix profile remove <name> :: uninstall
+nix profile upgrade <name> :: update to what its flake (or lock) points at
+nix profile upgrade --all :: update everything
+nix profile history :: every generation, with what changed
+nix profile rollback :: back to the previous generation
+
+## The marlinos dev tools (roles/dev/flake.nix)
+marlinos-update :: pulls, upgrades the dev profile to the pinned versions
+nix flake update --flake path:<repo>/roles/dev :: bump nixpkgs in flake.lock, then commit
+nix flake metadata path:<repo>/roles/dev :: which nixpkgs revision is pinned, and when
+> add a tool: put it in flake.nix `paths`, then marlinos-update (or nix profile upgrade dev)
+
+## Flakes
+nix flake init :: a flake.nix template in this directory
+nix flake init -t github:nix-community/templates#<lang> :: a ready dev shell for a language
+nix flake show :: what a flake provides (packages, devShells, apps)
+nix flake update :: refresh all inputs in flake.lock
+nix flake update <input> :: refresh one input
+nix flake check :: evaluate and run the flake's checks
+> a flake only sees files git knows: `git add` new files (or use a path:<dir> flake URL)
+
+## Project dev shells
+nix develop :: enter the flake's devShell (default)
+nix develop .#<name> :: another devShell
+nix develop -c <cmd> :: run one command inside it
+echo "use flake" > .envrc && direnv allow :: enter the shell automatically on cd (nix-direnv)
+direnv reload :: after changing flake.nix
+direnv deny :: stop auto-loading this directory
+
+## A minimal dev shell (flake.nix)
+inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable"; :: where packages come from
+outputs = { nixpkgs, ... }: let pkgs = nixpkgs.legacyPackages.x86_64-linux; in { ... }; :: the function that builds outputs
+devShells.x86_64-linux.default = pkgs.mkShell { packages = [ pkgs.go pkgs.gopls ]; }; :: the shell: these on PATH
+shellHook = "export FOO=bar"; :: (inside mkShell) run when the shell starts
+
+## Build and inspect
+nix build :: build the flake's default package into ./result
+nix build nixpkgs#<pkg> --no-link --print-out-paths :: build or fetch, print the store path
+nix path-info -Sh <path or flake> :: size with all dependencies (closure)
+nix why-depends <a> <b> :: why one store path needs another
+nix log <path or flake> :: the build log
+nix repl :: try the language; `:lf .` loads this flake, `:q` quits
+nix eval nixpkgs#<pkg>.version :: evaluate one attribute
+
+## Language crumbs
+let x = 1; in x + 1 :: local bindings
+{ a = 1; b.c = 2; } :: an attribute set (b.c nests)
+x: x * 2 :: a function; `{ a, b ? 3, ... }: a + b` takes a set
+with pkgs; [ go nodejs ] :: bring a set's names into scope
+inherit (pkgs) go; :: same as `go = pkgs.go;`
+"${pkgs.go}/bin/go" :: interpolation; a package becomes its store path
+
+## Disk and cleanup
+nix-collect-garbage :: delete store paths nothing uses
+nix-collect-garbage --delete-older-than 30d :: also drop old profile generations
+nix store optimise :: hard-link identical files (saves space)
+du -sh /nix/store :: how big it is (on the x230: /home/nix)

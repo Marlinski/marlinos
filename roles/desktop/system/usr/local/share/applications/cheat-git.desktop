@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=git cheat sheet
+Comment=The basics of git, in a terminal
+Exec=alacritty --class cheat --title "git cheat sheet" -e cheat --page git
+Icon=accessories-dictionary
+Terminal=false
+Keywords=cheat;help;man;git;

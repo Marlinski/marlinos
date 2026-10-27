@@ -1,0 +1,38 @@
+# systemd :: services, logs, timers, the user session
+
+## Services
+systemctl status <unit> :: state, recent log lines
+sudo systemctl start / stop / restart <unit> :: now
+sudo systemctl enable --now <unit> :: start at boot and now (disable --now: the opposite)
+systemctl --failed :: units that failed
+systemctl list-units --type=service :: running services
+systemctl cat <unit> :: the unit file (with drop-ins)
+sudo systemctl edit <unit> :: add a drop-in override
+sudo systemctl daemon-reload :: after editing unit files
+sudo systemctl reset-failed :: forget past failures
+
+## Your user's services (Syncthing, the desktop session)
+systemctl --user status <unit> :: same commands, with --user, no sudo
+systemctl --user list-units :: what runs in your session
+systemctl --user show-environment :: the environment desktop apps get
+
+## Logs (journalctl)
+journalctl -b :: this boot (-b -1: the previous one)
+journalctl -u <unit> -f :: one unit, live
+journalctl -p err -b :: errors this boot
+journalctl --since "1 hour ago" :: by time ("yesterday", "2026-10-27 21:00")
+journalctl --user -b :: your session's apps (Hyprland, waybar…)
+journalctl -k :: kernel messages (like dmesg)
+journalctl --disk-usage / --vacuum-time=2weeks :: size / shrink it
+
+## Timers
+systemctl list-timers :: scheduled jobs and their next run
+systemd-run --on-calendar=daily <cmd> :: a one-off scheduled command
+systemd-run --user --on-active=30m <cmd> :: in 30 minutes
+
+## Machine
+systemctl reboot / poweroff / suspend :: power
+systemd-analyze blame :: what slowed the boot
+hostnamectl / timedatectl / localectl :: hostname, time, keyboard
+loginctl :: sessions and seats
+coredumpctl list :: programs that crashed

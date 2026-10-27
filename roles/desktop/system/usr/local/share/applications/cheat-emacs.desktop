@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Emacs cheat sheet
+Comment=The basics of Emacs, in a terminal
+Exec=alacritty --class cheat --title "Emacs cheat sheet" -e cheat --page emacs
+Icon=accessories-dictionary
+Terminal=false
+Keywords=cheat;help;man;emacs;

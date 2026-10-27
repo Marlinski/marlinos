@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Vim / Neovim cheat sheet
+Comment=The basics of Vim / Neovim, in a terminal
+Exec=alacritty --class cheat --title "Vim / Neovim cheat sheet" -e cheat --page vim
+Icon=accessories-dictionary
+Terminal=false
+Keywords=cheat;help;man;vim;

@@ -38,6 +38,11 @@ Newest first. One line of what, one line of why.
   break AUR builds), mtr and wireshark (raw-socket capabilities set by their packages), docker
   (a system service), the GUI editors. The x230 keeps `/nix` on `/home` (`nix.mount`): its `/`
   is small.
+- **Cheat sheets: `cheat <topic>`** (`common/bin/cheat`, data in `common/config/cheat/*.cheat`):
+  one renderer, plain data files (`command :: description`, `## section`, `> note`), Tokyo Night
+  colors, wrapped to the terminal width (never horizontal scrolling), columns on wide screens,
+  `less` when taller than the screen. The Hyprland sheet reads the `bindd` lines of the live
+  config. Each sheet has a launcher entry (Super+Space, "<topic> cheat sheet").
 - **tmux activity:** a background window with new output has its name in bold yellow, no extra mark.
 
 ## 2026-10-27: package lists, shell, dev role

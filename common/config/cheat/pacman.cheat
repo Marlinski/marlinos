@@ -1,0 +1,41 @@
+# pacman :: Arch packages, the AUR (yay) and the marlinos commands
+
+## marlinos
+marlinos-update :: pull the repo, upgrade everything (pacman, AUR, Nix), re-apply the layers
+marlinos-install :: apply the layers to this machine (safe to re-run)
+marlinos-link :: only the config symlinks, no sudo
+marlinos-unlisted :: installed packages no layer lists
+> add a package: put it in a layer's packages.txt (aur.txt for the AUR), then marlinos-install
+
+## Find
+pacman -Ss <word> :: search the repos
+pacman -Si <pkg> :: details of a repo package
+pacman -Qs <word> :: search what is installed
+pacman -Qi <pkg> :: details of an installed one (Required By: who needs it)
+pacman -Ql <pkg> :: files it installed
+pacman -Qo <file> :: which package owns a file
+pacman -F <file> :: which package would provide a file (pacman -Fy once)
+
+## Install and remove
+sudo pacman -S <pkg> :: install
+sudo pacman -Syu :: upgrade the whole system (never -Sy alone)
+sudo pacman -Rns <pkg> :: remove with its unused dependencies and configs
+sudo pacman -D --asdeps <pkg> :: mark as a dependency (goes once nothing needs it)
+pacman -Qdtq :: orphans: dependencies nothing needs
+sudo pacman -Rns $(pacman -Qdtq) :: remove the orphans
+pacman -Qeq :: explicitly installed packages
+
+## AUR (yay)
+yay <word> :: search the repos and the AUR, pick by number
+yay -S <pkg> :: install from the AUR
+yay -Sua :: upgrade AUR packages only
+yay -Gp <pkg> :: print its PKGBUILD (read it before installing)
+
+## Trouble
+sudo pacman -Sc :: drop cached old package files
+paccache -rk2 :: keep only the 2 newest versions in the cache
+find /etc -name '*.pacnew' :: new default configs to merge after upgrades
+pacdiff :: merge .pacnew files interactively
+sudo pacman-key --refresh-keys :: when signatures fail
+cat /var/log/pacman.log | tail :: what changed recently
+> sudo locked after wrong passwords? Super+Space, "Unlock sudo"

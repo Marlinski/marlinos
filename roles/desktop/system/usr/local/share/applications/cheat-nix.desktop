@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Nix cheat sheet
+Comment=The basics of Nix, in a terminal
+Exec=alacritty --class cheat --title "Nix cheat sheet" -e cheat --page nix
+Icon=accessories-dictionary
+Terminal=false
+Keywords=cheat;help;man;nix;

@@ -1,0 +1,213 @@
+#!/usr/bin/python3 -I
+"""cheat: colored cheat sheets from ~/.config/cheat/<topic>.cheat, sized to the terminal.
+
+  cheat              list the topics
+  cheat <topic>      show one (pages with less when it is taller than the screen)
+  cheat --page <t>   always page (for the launcher: the window stays until q)
+
+A .cheat file:
+  # Title :: subtitle
+  ## Section
+  command <arg> :: what it does, `code` in backticks
+  > a note
+  !binds <file>      entries from a Hyprland config's bindd lines (always up to date)
+Lines are wrapped to the width (never wider than the terminal); wide terminals get columns.
+The launcher (Super+Space) has one entry per sheet: roles/desktop/system/usr/local/share/applications.
+"""
+import os, re, shutil, subprocess, sys, tempfile
+from pathlib import Path
+
+DIR = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config")) / "cheat"
+
+def rgb(h, bg=False):
+    r, g, b = (int(h[i:i + 2], 16) for i in (1, 3, 5))
+    return f"\033[{48 if bg else 38};2;{r};{g};{b}m"
+
+RESET, BOLD, ITAL = "\033[0m", "\033[1m", "\033[3m"
+C = dict(bg="#1a1b26", fg="#c0caf5", dim="#565f89", rule="#3b4261", blue="#7aa2f7",
+         purple="#bb9af7", green="#9ece6a", yellow="#e0af68", cyan="#7dcfff", orange="#ff9e64")
+
+
+def wrap(text, width):
+    """Words into lines of at most width characters (a too-long word is cut)."""
+    lines, cur = [], ""
+    for word in text.split():
+        while len(word) > width:
+            if cur:
+                lines.append(cur); cur = ""
+            lines.append(word[:width]); word = word[width:]
+        if not cur:
+            cur = word
+        elif len(cur) + 1 + len(word) <= width:
+            cur += " " + word
+        else:
+            lines.append(cur); cur = word
+    if cur or not lines:
+        lines.append(cur)
+    return lines
+
+
+def paint_cmd(s):
+    """Command text: green, <placeholders> yellow."""
+    out = re.sub(r"(<[^>]+>)", lambda m: rgb(C["yellow"]) + m.group(1) + rgb(C["green"]), s)
+    return rgb(C["green"]) + out + RESET
+
+
+def paint_desc(s):
+    """Description: normal text, `code` cyan."""
+    return rgb(C["fg"]) + re.sub(r"`([^`]+)`", lambda m: rgb(C["cyan"]) + m.group(1) + rgb(C["fg"]), s) + RESET
+
+
+def vislen(s):
+    return len(re.sub(r"\033\[[0-9;]*m", "", s))
+
+
+def binds(conf):
+    """Sections of (keys, description) from a Hyprland config: its "# ---- name" comments give
+    the sections, bindd lines (bindd = MODS, KEY, Description, ...) the entries. A run like
+    Workspace 1 … Workspace 10 becomes one line."""
+    try:
+        text = Path(os.path.expanduser(conf)).read_text()
+    except OSError:
+        return [("Keys", [("", f"(cannot read {conf})")])]
+    sections, name = [], "Keys"
+    for line in text.splitlines():
+        m = re.match(r"#\s*-{10,}\s*(.+)", line)
+        if m:
+            name = m.group(1).strip().capitalize()
+            continue
+        m = re.match(r"\s*bind[a-z]*d[a-z]*\s*=\s*([^,]*),\s*([^,]+),\s*([^,]+),", line)
+        if not m:
+            continue
+        mods, key, desc = (x.strip() for x in m.groups())
+        key = {"mouse:272": "LMB", "mouse:273": "RMB", "Prior": "PgUp", "Next": "PgDn"}.get(key, key)
+        key = re.sub(r"^XF86", "", key)
+        key = key[:1].upper() + key[1:]
+        keys = "+".join([w.capitalize() for w in mods.replace("$mainMod", "SUPER").split()] + [key])
+        if not sections or sections[-1][0] != name:
+            sections.append((name, []))
+        sections[-1][1].append((keys, desc))
+    out = []
+    for name, entries in sections:   # collapse numbered runs
+        merged = []
+        for keys, desc in entries:
+            m = re.match(r"(.*?)(\d+)$", desc)
+            if merged and m and merged[-1][2] == m.group(1):
+                merged[-1][1] = keys; merged[-1][4] = m.group(2)
+            else:
+                merged.append([keys, keys, m.group(1) if m else None, desc, m.group(2) if m else None])
+        out.append((name, [(a if a == b else f"{a} … {b.rsplit('+', 1)[-1]}",
+                            d if p is None or a == b else f"{p}{d[len(p):]}–{n}") for a, b, p, d, n in merged]))
+    return out
+
+
+def parse(path):
+    title, sub, sections = path.stem, "", []
+    for raw in path.read_text().splitlines():
+        line = raw.rstrip()
+        if line.startswith("## "):
+            sections.append([line[3:].strip(), []])
+        elif line.startswith("# "):
+            title, _, sub = (x.strip() for x in line[2:].partition("::"))
+        elif not line.strip():
+            continue
+        else:
+            if not sections:
+                sections.append(["", []])
+            items = sections[-1][1]
+            if line.startswith(">"):
+                items.append(("note", line[1:].strip()))
+            elif line.startswith("!binds "):
+                if not items:
+                    sections.pop()
+                for name, entries in binds(line[7:].strip()):
+                    sections.append([name, [("entry", k, d) for k, d in entries]])
+            else:
+                cmd, sep, desc = line.partition(" :: ")
+                items.append(("entry", cmd.strip(), desc.strip()) if sep else ("note", line.strip()))
+    return title, sub, sections
+
+
+def block(name, items, width):
+    """One section as lines of at most width visible characters."""
+    lines = []
+    if name:
+        head = f"▍{name}"
+        lines.append(rgb(C["purple"]) + BOLD + head + RESET + " " + rgb(C["rule"]) + "─" * max(0, width - len(head) - 1) + RESET)
+    cmds = [it[1] for it in items if it[0] == "entry"]
+    keyw = min(max((len(c) for c in cmds), default=0), max(12, int(width * 0.42)))
+    descw = max(10, width - keyw - 2)
+    for it in items:
+        if it[0] == "note":
+            lines += [rgb(C["dim"]) + ITAL + re.sub(r"`([^`]+)`", lambda m: rgb(C["cyan"]) + m.group(1) + rgb(C["dim"]), l) + RESET
+                      for l in wrap(it[1], width)]
+            continue
+        _, cmd, desc = it
+        if len(cmd) <= keyw:
+            dl = wrap(desc, descw)
+            lines.append(paint_cmd(cmd) + " " * (keyw - len(cmd) + 2) + paint_desc(dl[0]))
+            lines += [" " * (keyw + 2) + paint_desc(l) for l in dl[1:]]
+        else:   # a long command gets its own line(s), the description below it
+            lines += [paint_cmd(l) for l in wrap(cmd, width)]
+            lines += [" " * 4 + paint_desc(l) for l in wrap(desc, width - 4)]
+    lines.append("")
+    return lines
+
+
+def render(path, cols):
+    title, sub, sections = parse(path)
+    ncol = 3 if cols >= 240 else 2 if cols >= 150 else 1
+    gap = 4
+    colw = (cols - 2 - gap * (ncol - 1)) // ncol
+    blocks = [block(n, it, colw) for n, it in sections]
+    # columns in reading order: fill each up to its share of the total height
+    total = sum(len(b) for b in blocks)
+    columns, cur, target = [], [], total / ncol
+    for b in blocks:
+        if cur and len(columns) < ncol - 1 and len(cur) + len(b) / 2 > target:
+            columns.append(cur); cur = []
+        cur += b
+    columns.append(cur)
+    height = max(len(c) for c in columns)
+    head = f" {title} "
+    out = ["", " " + rgb(C["blue"], True) + rgb(C["bg"]) + BOLD + head + RESET + "  " +
+           rgb(C["dim"]) + ITAL + sub[: max(0, cols - len(head) - 4)] + RESET, ""]
+    for i in range(height):
+        row = ""
+        for j, col in enumerate(columns):
+            cell = col[i] if i < len(col) else ""
+            pad = colw - vislen(cell)
+            row += cell + (" " * (pad + gap) if j < len(columns) - 1 else "")
+        out.append(" " + row.rstrip() if row.strip() else "")
+    return "\n".join(out).rstrip() + "\n"
+
+
+def topics():
+    return sorted(p.stem for p in DIR.glob("*.cheat"))
+
+
+def main(argv):
+    page = "--page" in argv
+    args = [a for a in argv if a != "--page"]
+    if not args or args[0] in ("-h", "--help", "-l", "--list"):
+        print("cheat sheets: " + (" ".join(topics()) or f"(none in {DIR})"))
+        print("usage: cheat <topic>")
+        return 0
+    path = DIR / f"{args[0]}.cheat"
+    if not path.exists():
+        print(f"no cheat sheet '{args[0]}'. Topics: {' '.join(topics())}", file=sys.stderr)
+        return 1
+    size = shutil.get_terminal_size((100, 40))
+    text = render(path, size.columns - 1)   # one column spare: no wrap at the right edge
+    if not page and (not sys.stdout.isatty() or text.count("\n") < size.lines):
+        sys.stdout.write(text)
+        return 0
+    prompt = f" {path.stem} cheat sheet ?e(end):%pB\\%. · ↑↓ PgUp PgDn scroll · / search · q quit "
+    with tempfile.NamedTemporaryFile("w", prefix="cheat-", suffix=".txt") as f:   # a file: less knows its size
+        f.write(text); f.flush()
+        subprocess.run(["less", "-R", "-+S", "-+F", "-+X", "--mouse", "-Ps" + prompt, "-Pm" + prompt, f.name])
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))
