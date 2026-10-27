@@ -1,13 +1,24 @@
 #!/bin/bash
-# waybar music module: a note, plus artist - title while Spotify plays. One JSON line per change.
-show() {  # status artist title
-  local text=󰝚 track
-  track=$(printf '%s - %s' "$2" "$3" | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g')
-  [[ -z $2$3 ]] && track=
-  [[ $1 == Playing && -n $track ]] && text="󰝚 $track"
-  jq -nc --arg t "$text" --arg c "${1:-Stopped}" --arg tip "${track:-Music}" \
+# waybar music module: a note, plus artist - title while Spotify plays (grey when paused). A title
+# longer than $width characters scrolls through, like a marquee. One JSON line every half second.
+width=30
+export LC_ALL=${LANG:-C.UTF-8}
+esc() { sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g' <<<"$1"; }
+last= i=0
+while :; do
+  IFS=$'\t' read -r status track < <(playerctl -p spotify metadata --format $'{{status}}\t{{artist}} - {{title}}' 2>/dev/null)
+  [[ $track == " - " ]] && track=
+  [[ $track != "$last" ]] && { last=$track; i=0; }
+  shown=$track
+  if ((${#track} > width)); then   # loop the text: show $width characters starting at $i
+    loop="$track   ·   "
+    shown=${loop:i}${loop:0:i}
+    shown=${shown:0:width}
+    i=$(((i + 1) % ${#loop}))
+  fi
+  text=󰝚
+  [[ $status == Playing || $status == Paused ]] && [[ -n $shown ]] && text="󰝚 $(esc "$shown")"
+  jq -nc --arg t "$text" --arg c "${status:-Stopped}" --arg tip "$(esc "${track:-Music}")" \
     '{text: $t, class: ($c | ascii_downcase), tooltip: $tip}'
-}
-show Stopped
-playerctl -p spotify --follow metadata --format $'{{status}}\t{{artist}}\t{{title}}' 2>/dev/null |
-  while IFS=$'\t' read -r status artist title; do show "$status" "$artist" "$title"; done
+  sleep 0.5
+done
