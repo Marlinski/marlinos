@@ -1,0 +1,20 @@
+#!/bin/bash
+# List build and dependency dirs nobody touched for a while (node_modules, Rust target/, .venv),
+# with their size, and delete them after one confirmation. They all come back with a rebuild.
+#   dev-clean [days=30] [where=~]
+days=${1:-30}
+where=${2:-$HOME}
+mapfile -t dirs < <(
+  find "$where" -xdev \( -path "$HOME/.local" -o -path "$HOME/.cache" -o -name .git \) -prune -o \
+    -type d \( -name node_modules -o -name .venv -o -name target \) -prune -print 2>/dev/null |
+  while read -r d; do
+    [[ $(basename "$d") == target && ! -f $(dirname "$d")/Cargo.toml ]] && continue
+    # stale: nothing in the project changed for $days days
+    [[ -z $(find "$(dirname "$d")" -maxdepth 1 -newermt "-$days days" -print -quit) ]] && echo "$d"
+  done
+)
+((${#dirs[@]})) || { echo "nothing older than $days days under $where"; exit 0; }
+du -sh "${dirs[@]}" | sort -h
+echo "total: $(du -shc "${dirs[@]}" | tail -1 | cut -f1) in ${#dirs[@]} dirs (untouched for $days+ days)"
+read -rp "delete them? [y/N] " a
+[[ $a == [yY] ]] && rm -rf "${dirs[@]}" && echo deleted

@@ -1,0 +1,46 @@
+# Programming. Toolchains from the Arch repos; every tool keeps its files under the XDG dirs
+# (config/environment.d/50-dev.conf), and `dev-clean` sweeps stale build dirs.
+go
+rustup
+nodejs
+npm
+python
+uv
+clang
+llvm
+inotify-tools
+
+# containers (each host can add its own /etc/docker/daemon.json)
+docker
+docker-compose
+docker-buildx
+
+# network and protocol tools
+nmap
+mtr
+traceroute
+iperf3
+tcpflow
+wireshark-cli
+wireshark-qt
+
+# language servers and formatters for neovim (config/nvim/lua/marlinos/lsp.lua): Arch repos,
+# not downloaded by the editor
+lua-language-server
+rust-analyzer
+gopls
+pyright
+ruff
+typescript-language-server
+bash-language-server
+yaml-language-server
+marksman
+taplo-cli
+stylua
+prettier
+shfmt
+
+# editors (neovim is in common)
+code
+opencode
+emacs-wayland

@@ -1,0 +1,107 @@
+# marlinos prompt (fish and bash), Tokyo Night:
+#   ~/W/g/marlinos  main ⇡1 !2   rust 1.92  took 4s
+#   ❯
+# user@host only over ssh; language versions only inside a project that uses them.
+add_newline = true
+command_timeout = 300
+format = """
+$username$hostname$directory$git_branch$git_state$git_status\
+$python$nodejs$rust$golang$c$docker_context$kubernetes\
+$cmd_duration$jobs$status
+$character"""
+
+[username]
+format = "[$user]($style)@"
+style_user = "#7aa2f7"
+show_always = false
+
+[hostname]
+ssh_only = true
+format = "[$hostname]($style) "
+style = "bold #7aa2f7"
+
+[directory]
+style = "bold #7dcfff"
+truncation_length = 4
+truncation_symbol = "…/"
+fish_style_pwd_dir_length = 1
+read_only = " 󰌾"
+
+[git_branch]
+format = "[$symbol$branch]($style) "
+symbol = " "
+style = "#bb9af7"
+
+[git_status]
+format = "([$all_status$ahead_behind]($style) )"
+style = "#e0af68"
+ahead = "⇡${count}"
+behind = "⇣${count}"
+diverged = "⇡${ahead_count}⇣${behind_count}"
+modified = "!${count}"
+untracked = "?${count}"
+staged = "+${count}"
+deleted = "✘${count}"
+stashed = "≡"
+
+[git_state]
+style = "bold #f7768e"
+
+[python]
+format = "[${symbol}${version}( \\($virtualenv\\))]($style) "
+symbol = " "
+style = "#e0af68"
+
+[nodejs]
+format = "[$symbol$version]($style) "
+symbol = " "
+style = "#9ece6a"
+
+[rust]
+format = "[$symbol$version]($style) "
+symbol = " "
+style = "#ff9e64"
+
+[golang]
+format = "[$symbol$version]($style) "
+symbol = " "
+style = "#7dcfff"
+
+[c]
+format = "[$symbol$version]($style) "
+symbol = " "
+style = "#7aa2f7"
+
+[docker_context]
+format = "[$symbol$context]($style) "
+symbol = " "
+style = "#2ac3de"
+
+[kubernetes]
+disabled = false
+format = "[$symbol$context]($style) "
+symbol = "☸ "
+style = "#2ac3de"
+detect_folders = ["k8s", "kubernetes", "helm", "charts"]
+detect_files = ["Chart.yaml", "kustomization.yaml"]
+
+[cmd_duration]
+min_time = 3000
+format = "[took $duration]($style) "
+style = "#565f89"
+
+[jobs]
+format = "[$symbol$number]($style) "
+symbol = "✦"
+style = "#e0af68"
+
+[status]
+disabled = false
+format = "[$symbol$status]($style) "
+symbol = "✘ "
+style = "#f7768e"
+
+[character]
+success_symbol = "[❯](bold #9ece6a)"
+error_symbol = "[❯](bold #f7768e)"
+vimcmd_symbol = "[❮](bold #9ece6a)"

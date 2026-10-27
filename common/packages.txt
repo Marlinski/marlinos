@@ -1,5 +1,6 @@
 # every machine
 base-devel
+fakeroot
 git
 openssh
 # terminal description for ssh sessions coming from ghostty (else: "missing or unsuitable terminal")
@@ -22,3 +23,54 @@ ncdu
 ranger
 networkmanager
 wireless-regdb
+base
+sudo
+
+# shell: fish for typing, bash for scripts (config/fish, config/bash)
+fish
+screen
+
+# command line
+vim
+less
+man-db
+htop
+fastfetch
+inxi
+jq
+yq
+glow
+gum
+dua-cli
+plocate
+expac
+pacman-contrib
+tree-sitter-cli
+qrencode
+
+# network
+wget
+whois
+inetutils
+openbsd-netcat
+socat
+mosh
+tcpdump
+strace
+
+# hardware
+lsof
+usbutils
+pciutils
+lm_sensors
+smartmontools
+man-pages
+
+# archives, filesystems
+7zip
+zip
+unzip
+rsync
+dosfstools
+exfatprogs
+ntfs-3g

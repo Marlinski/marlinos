@@ -29,3 +29,65 @@ noto-fonts-cjk
 noto-fonts-emoji
 ttf-cascadia-mono-nerd
 ttf-jetbrains-mono-nerd
+
+# audio: pipewire everywhere (pulse, alsa and jack apps all go through it)
+pipewire
+pipewire-alsa
+pipewire-pulse
+pipewire-jack
+gst-plugin-pipewire
+alsa-utils
+wiremix
+pamixer
+pavucontrol
+
+# more fonts (page and UI fonts; the icons waybar uses)
+ttf-dejavu
+ttf-liberation
+noto-fonts-extra
+ttf-nerd-fonts-symbols-mono
+woff2-font-awesome
+
+# Wayland bits
+grim
+wtype
+hyprsunset
+hyprland-guiutils
+xdg-terminal-exec
+qt6-imageformats
+gnome-themes-extra
+libsecret
+
+# files, disks, phones
+nautilus
+sushi
+ffmpegthumbnailer
+gvfs
+gvfs-mtp
+gvfs-smb
+udisks2
+udiskie
+gnome-disk-utility
+
+# printing, local network discovery, bluetooth
+cups
+cups-filters
+cups-pk-helper
+system-config-printer
+avahi
+nss-mdns
+blueman
+
+# browser next to Chrome (hardened: system/etc/firefox/policies)
+firefox
+
+# media, images
+vlc
+mpv
+mpv-mpris
+imv
+evince
+imagemagick
+inkscape
+gimp
+pinta

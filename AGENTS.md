@@ -10,7 +10,7 @@ marlinos is hardware-agnostic. A machine is built from **layers**, applied in or
 
 ```
 common/          every machine (shell, CLI tools, network, ssh)
-roles/<role>/    optional capabilities: roles/desktop (Hyprland, bar, fonts, autologin), roles/splash (plymouth boot splash; each host brings its own theme)
+roles/<role>/    optional capabilities: roles/desktop (Hyprland, bar, fonts, autologin), roles/dev (toolchains, editors, docker; every tool kept under the XDG dirs), roles/splash (plymouth boot splash; each host brings its own theme)
 hosts/<host>/    one machine: host.conf (ROLES=(...)), hardware packages, modprobe options, hypr.conf
 ```
 

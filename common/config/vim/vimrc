@@ -1,0 +1,23 @@
+" marlinos: plain vim as a backup editor (neovim is the real one). Built-ins only.
+set nocompatible
+filetype plugin indent on
+syntax on
+set termguicolors background=dark
+silent! colorscheme habamax
+set number relativenumber cursorline signcolumn=yes scrolloff=8
+set expandtab shiftwidth=4 tabstop=4 smartindent
+set ignorecase smartcase incsearch hlsearch
+set hidden mouse=a clipboard=unnamedplus updatetime=250 belloff=all
+set wildmenu wildoptions=pum,fuzzy completeopt=menuone,noselect,popup
+set list listchars=tab:»\ ,trail:·,nbsp:␣ fillchars=vert:│,eob:\ 
+set laststatus=2 noshowmode
+set statusline=%#PmenuSel#\ %{toupper(mode())}\ %#StatusLine#\ %f%m%r%=%y\ \ %l:%c\ \ %p%%\ 
+set undofile undodir=~/.local/state/vim/undo// noswapfile
+call mkdir(expand('~/.local/state/vim/undo'), 'p')
+let mapleader = ' '
+let g:netrw_banner = 0
+nnoremap <Esc> :nohlsearch<CR>
+nnoremap - :Explore<CR>
+" fzf ships a vim plugin: <space><space> files
+runtime plugin/fzf.vim
+nnoremap <leader><space> :FZF<CR>

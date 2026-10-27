@@ -2,6 +2,15 @@
 
 Newest first. One line of what, one line of why.
 
+## 2026-10-27: package lists, shell, dev role
+- **Every installed package is listed in a layer, or it goes.** `marlinos-unlisted` is the review: what isn't listed is removed (or marked as a dependency when something listed needs it). Cleaned both machines (x230: 280 unlisted, from 2013 on).
+- **Official repos first, the AUR only when nothing else exists** (wl-screenrec, google-chrome, claude-code, minix's printer driver, urbanterror): AUR packages are unreviewed build scripts. Nix or Flatpak may replace these later.
+- **New `roles/dev`** (both laptops): go, rustup, node, python + uv, clang/llvm, docker, network tools, VS Code, opencode, emacs. `config/environment.d/50-dev.conf` moves every toolchain under the XDG dirs (`~/.local/share/{cargo,rustup,go}`, `~/.cache/{npm,go/mod}`, binaries in `~/.local/bin`); `dev-clean` lists and deletes build dirs untouched for 30 days.
+- **fish for typing, bash for the rest**: bash stays the login shell (tty1 autologin starts Hyprland from `~/.bash_profile`) and runs scripts; `~/.bashrc` hands interactive sessions to fish. Built-in autosuggestions, highlighting, completions: no plugin framework. Starship prompt, Tokyo Night.
+- **Emacs from built-ins only** (modus-vivendi tinted Tokyo Night, fido, completion-preview, which-key, eglot): looks right on first start, downloads nothing.
+- **Firefox next to Chrome**, hardened by `/etc/firefox/policies/policies.json` (no telemetry, studies, Pocket, sponsored content or ad measurement; strict tracking protection; uBlock Origin). Brave would need the AUR.
+- **Audio: pipewire on every desktop** (x230 leaves PulseAudio).
+
 ## 2026-10-26: minix host
 - **Minix Z300 = desktop role + home server** (docker, k3s), converted in place (no reinstall). It's managed remotely over ssh, so every boot change must fail safe.
 - **Splash is its own role** (`roles/splash`: plymouth + keep the last frame), out of `roles/desktop`, since layers only add. **Each host draws its own theme**: hutong lives in `hosts/x230`; minix has homelab (`hosts/minix/src/homelab`), its own desk at night with the cat asleep on the Minix box, the router, and a monitor scrolling the server's status.
@@ -44,10 +53,9 @@ Newest first. One line of what, one line of why.
 - **Commits:** no AI co-author trailers (see AGENTS.md).
 
 ## Open
-- Undecided apps and services: docker, printing (cups/avahi), apps (signal, spotify, chrome, localsend, nautilus, viewers), swayosd/hyprsunset/yaru. Login-attempt and firewall policy to define.
-- Package list reconciliation (`marlinos-unlisted`): 321 explicit packages not in any list (lots from 2013–2025), review and remove or list them.
+- x230 has no firewall (minix has one): a laptop firewall for roles/desktop.
+- Replace the remaining AUR packages (Nix? Flatpak? the vendors' own installers?).
 - 45 `.pacnew` files in /etc to merge (some from 2013).
 - `/etc/modprobe.d/modprobe.conf` i915 options (`i915_enable_rc6`, `i915_enable_fbc`, `lvds_downclock`) date from 2013 and are obsolete on current kernels; review.
 - Wifi card crashes (Intel 2200): memtest86+, `11n_disable=2` test, or swap for an Intel 6205.
 - nvim config (LazyVim starter in `~/.config/nvim`) not yet in the repo.
-- Audio: move from PulseAudio to pipewire-pulse (what Arch recommends now)?

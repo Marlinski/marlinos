@@ -12,3 +12,10 @@ btrfs-progs
 
 # WireGuard client of minix (system/etc/wireguard/wg0.conf)
 wireguard-tools
+
+# boot: GRUB on EFI
+grub
+efibootmgr
+iw
+# battery
+powertop
