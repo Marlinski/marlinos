@@ -23,6 +23,11 @@ Newest first. One line of what, one line of why.
   lazygit and a scratch shell; prefix s stays tmux's session tree with previews. screen 5 takes `#RRGGBB` colors (`truecolor on`).
 - **Bluetooth: bluetui** (a TUI, like nmtui) instead of blueman, and no tray applets: Remmina's
   is hidden by `config/autostart/remmina-applet.desktop` (`Hidden=true`) and its tray setting off.
+- **Music: spotify_player** (a Spotify TUI that streams itself, in extra; needs Premium) in a
+  floating terminal on the special workspace `music`, so hiding it doesn't stop playback. The bar
+  shows a monochrome note (`bin/music-status`, from its MPRIS) instead of a logo; click or Super+M
+  shows/hides it. Picked over ncspot for its cover art and MPRIS controls.
+- **tmux activity:** a background window with new output has its name in bold yellow, no extra mark.
 
 ## 2026-10-27: package lists, shell, dev role
 - **Every installed package is listed in a layer, or it goes.** `marlinos-unlisted` is the review: what isn't listed is removed (or marked as a dependency when something listed needs it). Cleaned both machines (x230: 280 unlisted, from 2013 on).

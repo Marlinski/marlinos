@@ -18,10 +18,11 @@ window#waybar {
 #workspaces button.active { color: #7aa2f7; }
 #workspaces button.empty { color: #414868; }
 
-#clock, #tray, #pulseaudio, #backlight, #network, #bluetooth, #cpu, #memory, #battery {
+#clock, #tray, #custom-music, #pulseaudio, #backlight, #network, #bluetooth, #cpu, #memory, #battery {
   padding: 0 8px;
 }
 
 #battery.warning { color: #e0af68; }
 #battery.critical:not(.charging) { color: #f7768e; }
-#network.disconnected, #pulseaudio.muted, #bluetooth.off, #bluetooth.disabled { color: #565f89; }
+#network.disconnected, #pulseaudio.muted, #bluetooth.off, #bluetooth.disabled,
+#custom-music.stopped, #custom-music.paused { color: #565f89; }
