@@ -1,12 +1,10 @@
 #!/bin/bash
-# Music: ncspot in a terminal on the special workspace "music". Run again (click the note in the
-# bar, or Super+M) to hide or show it; it keeps playing while hidden.
+# Music: ncspot in a tiled terminal. Run again (click the note in the bar, or Super+M) to jump to it.
 if [[ ${1:-} == --run ]]; then
   ncspot || read -rp "ncspot exited with an error; Enter to close"
   exit
 fi
 if hyprctl clients | grep -q 'class: music$'; then
-  exec hyprctl dispatch togglespecialworkspace music >/dev/null
+  exec hyprctl dispatch focuswindow class:music >/dev/null
 fi
-uwsm app -- alacritty --class music --title Music -e "$0" --run &
-hyprctl dispatch togglespecialworkspace music >/dev/null
+exec uwsm app -- alacritty --class music --title Music -e "$0" --run
