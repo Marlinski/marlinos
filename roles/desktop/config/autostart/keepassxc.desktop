@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=KeePassXC
+Comment=Password manager, in the tray so the browser extension can reach it
+Exec=keepassxc --minimized
+Icon=keepassxc
+X-GNOME-Autostart-enabled=true
