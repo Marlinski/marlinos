@@ -1,4 +1,4 @@
--- Language servers from the Arch repos (roles/dev/packages.txt); their settings come from
+-- Language servers from the Nix profile (roles/dev/flake.nix); their settings come from
 -- nvim-lspconfig's lsp/*.lua. A server that isn't installed is simply skipped.
 local servers = {
   "lua_ls", "rust_analyzer", "gopls", "pyright", "ruff", "ts_ls", "clangd",

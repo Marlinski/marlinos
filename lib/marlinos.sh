@@ -9,6 +9,7 @@
 #   bin/<script>  -> ~/.local/bin/<script> (symlinked)
 #   system/...    -> /...                 (copied as root, @USER@ replaced in text files, backed up)
 #   src/          sources that generate files elsewhere in the layer (not applied)
+#   flake.nix     a Nix environment, installed into the user's Nix profile (named after the layer)
 # The host layer is also linked as ~/.config/marlinos/host, for files like hypr.conf.
 #
 # Scripts run as the user and call sudo for system steps. sudo is asked once up front;
@@ -212,6 +213,23 @@ link_configs() {
   for f in "$REPO"/bin/*; do link_one "$f" ~/.local/bin/"$(basename "$f")"; done
   if [[ -d $HOST_DIR ]]; then link_one "$HOST_DIR" ~/.config/marlinos/host; fi
   info "ok"
+}
+
+# Each layer's flake.nix: added to the user's Nix profile, or upgraded to what its flake.lock pins
+install_nix_profiles() {
+  command -v nix &>/dev/null || return 0
+  local l name nixc=(nix --extra-experimental-features 'nix-command flakes')
+  for l in $(layers); do
+    [[ -f $l/flake.nix ]] || continue
+    name=$(basename "$l")
+    step "Nix profile: $name (${l#$REPO/})"
+    if "${nixc[@]}" profile list --json | jq -e --arg n "$name" '.elements | has($n)' >/dev/null; then
+      "${nixc[@]}" profile upgrade "$name"
+    else
+      "${nixc[@]}" profile add "path:$l"
+    fi
+    info "ok"
+  done
 }
 
 check_hyprland_config() {

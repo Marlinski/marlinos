@@ -31,6 +31,7 @@ ensure_grub_microcode
 enable_services
 ensure_resolved_stub
 link_configs
+install_nix_profiles
 check_hyprland_config
 reload_session
 report

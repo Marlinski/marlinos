@@ -1,3 +1,6 @@
 # Editor used by CLI
 export SUDO_EDITOR="$EDITOR"
 export BAT_THEME=ansi
+# the Nix profile (dev role tools), when there is one, before the system's; direnv for .envrc files
+[[ -d ~/.nix-profile/bin && :$PATH: != *:$HOME/.nix-profile/bin:* ]] && PATH=$HOME/.nix-profile/bin:$PATH
+command -v direnv >/dev/null && eval "$(direnv hook bash)"

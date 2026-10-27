@@ -28,6 +28,16 @@ Newest first. One line of what, one line of why.
   to it, right click plays/pauses, scroll skips. The TUIs were tried first: spotify_player's
   built-in second login is rejected by Spotify (October 2026, aome510/spotify-player#1107), and
   ncspot was slow and clumsy.
+- **Dev tools from Nix** (`roles/dev/flake.nix`, pinned by `flake.lock`): toolchains (go,
+  rustup, node, python, uv), language servers and formatters, network tools (nmap, traceroute,
+  iperf3, tcpflow), direnv + nix-direnv. One `buildEnv` installed into the user's Nix profile as
+  `dev`; marlinos-install/update add or upgrade it (any layer may carry a `flake.nix`). Same
+  versions on every machine; `nix flake update` in `roles/dev` + commit moves them all. Per-project
+  shells: a `flake.nix` in the project and `use flake` in its `.envrc`.
+  Stays on pacman: clang/llvm (build against the system's libraries; a Nix `cc` on PATH would
+  break AUR builds), mtr and wireshark (raw-socket capabilities set by their packages), docker
+  (a system service), the GUI editors. The x230 keeps `/nix` on `/home` (`nix.mount`): its `/`
+  is small.
 - **tmux activity:** a background window with new output has its name in bold yellow, no extra mark.
 
 ## 2026-10-27: package lists, shell, dev role

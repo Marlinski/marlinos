@@ -1,0 +1,14 @@
+# The Nix store lives on /home (the big disk): / has little room
+[Unit]
+Description=Nix store on /home
+RequiresMountsFor=/home
+Before=nix-daemon.socket nix-daemon.service
+
+[Mount]
+What=/home/nix
+Where=/nix
+Type=none
+Options=bind
+
+[Install]
+WantedBy=local-fs.target

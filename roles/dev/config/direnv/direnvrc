@@ -1,0 +1,2 @@
+# cached Nix dev shells for "use flake" / "use nix" in .envrc
+source "$HOME/.nix-profile/share/nix-direnv/direnvrc"

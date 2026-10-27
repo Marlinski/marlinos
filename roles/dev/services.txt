@@ -1,1 +1,3 @@
 docker.service
+# started once at install so it creates /nix/store
+nix-daemon.service

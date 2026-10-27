@@ -1,3 +1,5 @@
 bluetooth.service
 # WireGuard client of minix (system/etc/wireguard/wg0.conf, key in /etc/wireguard/wg0.key)
 wg-quick@wg0.service
+# the Nix store on /home (system/etc/systemd/system/nix.mount)
+nix.mount

@@ -15,6 +15,7 @@ ensure_grub_microcode
 enable_services
 ensure_resolved_stub
 link_configs
+install_nix_profiles
 check_hyprland_config
 report
 step "Done. Reboot to start from tty1 autologin."
