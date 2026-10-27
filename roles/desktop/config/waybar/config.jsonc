@@ -4,7 +4,7 @@
   "height": 24,
   "modules-left": ["hyprland/workspaces"],
   "modules-center": ["clock"],
-  "modules-right": ["tray", "pulseaudio", "backlight", "network", "bluetooth", "cpu", "battery"],
+  "modules-right": ["tray", "custom/music", "pulseaudio", "backlight", "network", "bluetooth", "cpu", "battery"],
 
   "hyprland/workspaces": {
     "on-click": "activate",
@@ -15,6 +15,15 @@
     "tooltip-format": "<tt>{calendar}</tt>"
   },
   "tray": { "spacing": 8 },
+  "custom/music": {
+    "exec": "~/.local/bin/music-status",
+    "return-type": "json",
+    "max-length": 40,
+    "on-click": "~/.local/bin/music",
+    "on-click-right": "playerctl -p spotify play-pause",
+    "on-scroll-up": "playerctl -p spotify next",
+    "on-scroll-down": "playerctl -p spotify previous"
+  },
   "pulseaudio": {
     "format": "{icon} {volume}%",
     "format-muted": "󰝟 mute",

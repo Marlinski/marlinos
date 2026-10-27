@@ -23,8 +23,11 @@ Newest first. One line of what, one line of why.
   lazygit and a scratch shell; prefix s stays tmux's session tree with previews. screen 5 takes `#RRGGBB` colors (`truecolor on`).
 - **Bluetooth: bluetui** (a TUI, like nmtui) instead of blueman, and no tray applets: Remmina's
   is hidden by `config/autostart/remmina-applet.desktop` (`Hidden=true`) and its tray setting off.
-- **No Spotify TUI.** spotify_player's built-in second login is rejected by Spotify (October
-  2026, aome510/spotify-player#1107); ncspot worked but was slow and clumsy. Removed both.
+- **Music: the official Spotify app** (AUR), tiled like any window. The bar shows a monochrome
+  note (`bin/music-status`, from its MPRIS) instead of a logo; click or Super+M opens it or jumps
+  to it, right click plays/pauses, scroll skips. The TUIs were tried first: spotify_player's
+  built-in second login is rejected by Spotify (October 2026, aome510/spotify-player#1107), and
+  ncspot was slow and clumsy.
 - **tmux activity:** a background window with new output has its name in bold yellow, no extra mark.
 
 ## 2026-10-27: package lists, shell, dev role

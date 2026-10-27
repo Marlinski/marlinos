@@ -1,0 +1,13 @@
+#!/bin/bash
+# waybar music module: a note, plus artist - title while Spotify plays. One JSON line per change.
+show() {  # status artist title
+  local text=󰝚 track
+  track=$(printf '%s - %s' "$2" "$3" | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g')
+  [[ -z $2$3 ]] && track=
+  [[ $1 == Playing && -n $track ]] && text="󰝚 $track"
+  jq -nc --arg t "$text" --arg c "${1:-Stopped}" --arg tip "${track:-Music}" \
+    '{text: $t, class: ($c | ascii_downcase), tooltip: $tip}'
+}
+show Stopped
+playerctl -p spotify --follow metadata --format $'{{status}}\t{{artist}}\t{{title}}' 2>/dev/null |
+  while IFS=$'\t' read -r status artist title; do show "$status" "$artist" "$title"; done
