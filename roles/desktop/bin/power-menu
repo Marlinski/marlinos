@@ -1,0 +1,11 @@
+#!/bin/bash
+# Ask what to do: lock, suspend, log out or shut down. Run again while it's open to close it.
+pkill -x fuzzel && exit 0
+choice=$(printf '%s\n' "󰌾  Lock" "󰤄  Suspend" "󰍃  Log out" "󰐥  Shut down" |
+  fuzzel --dmenu --prompt "Power: " --lines 4 --width 18) || exit 0
+case $choice in
+  *Lock) loginctl lock-session ;;
+  *Suspend) systemctl suspend ;;
+  *"Log out") uwsm stop ;;
+  *"Shut down") systemctl poweroff ;;
+esac
