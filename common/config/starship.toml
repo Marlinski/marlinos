@@ -4,6 +4,8 @@
 # user@host only over ssh; language versions only inside a project that uses them.
 add_newline = true
 command_timeout = 300
+# the default 30 ms is too short for the first prompt after boot on a cold hard disk
+scan_timeout = 200
 format = """
 $username$hostname$directory$git_branch$git_state$git_status\
 $python$nodejs$rust$golang$c$docker_context$kubernetes\
