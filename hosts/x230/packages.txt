@@ -19,3 +19,5 @@ efibootmgr
 iw
 # battery
 powertop
+# RAM test, started from the GRUB menu (system/etc/grub.d/45_memtest)
+memtest86+-efi

@@ -103,4 +103,4 @@ Newest first. One line of what, one line of why.
 - Replace the remaining AUR packages (Nix? Flatpak? the vendors' own installers?).
 - 45 `.pacnew` files in /etc to merge (some from 2013).
 - `/etc/modprobe.d/modprobe.conf` i915 options (`i915_enable_rc6`, `i915_enable_fbc`, `lvds_downclock`) date from 2013 and are obsolete on current kernels; review.
-- Wifi card crashes (Intel 2200): memtest86+, `11n_disable=2` test, or swap for an Intel 6205.
+- Wifi: the crashing Intel 2200 was replaced by an Intel 7260 AC (2026-10-29, BIOS whitelist removed with 1vyrain); its iwlwifi workarounds are gone. The RAM was replaced too (2×8 GB); run memtest86+ (GRUB menu, Esc at boot) once.

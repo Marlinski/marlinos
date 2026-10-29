@@ -2,7 +2,7 @@
 
 Lucien's own Arch Linux + Hyprland setup.
 This repo is the single source of truth for decisions, configs, package lists and scripts.
-The first machine is the ThinkPad X230 (ext4 + GRUB, Intel graphics, Intel 2200 wifi). Reproducing it on another machine is a later goal.
+The first machine is the ThinkPad X230 (ext4 + GRUB, Intel graphics, Intel 7260 wifi). Reproducing it on another machine is a later goal.
 
 ## Layout
 

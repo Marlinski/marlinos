@@ -1,0 +1,9 @@
+#!/bin/sh
+# marlinos: GRUB menu entry for the RAM test (memtest86+-efi). The menu is hidden: press Esc at boot.
+[ -f /boot/memtest86+/memtest86x64.efi ] || exit 0
+cat <<'MENU'
+menuentry "Memtest86+ (RAM test)" {
+    search --no-floppy --file --set=root /memtest86+/memtest86x64.efi
+    chainloader /memtest86+/memtest86x64.efi
+}
+MENU
