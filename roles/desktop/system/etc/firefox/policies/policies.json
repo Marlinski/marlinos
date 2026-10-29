@@ -82,6 +82,10 @@
       "network.dns.disablePrefetch": {
         "Value": true,
         "Status": "default"
+      },
+      "toolkit.legacyUserProfileCustomizations.stylesheets": {
+        "Value": true,
+        "Status": "default"
       }
     },
     "ExtensionSettings": {

@@ -1,0 +1,34 @@
+/* marlinos: the toolbars (tabs, address bar) slide away and the page gets the whole window.
+   They come back while the mouse is on the thin strip at the top of the window, or with Ctrl+L / Ctrl+T.
+   Needs toolkit.legacyUserProfileCustomizations.stylesheets (set by the Firefox policy). */
+
+:root {
+  --marlinos-strip: 5px;   /* what stays of the toolbars when hidden: the hover target */
+}
+
+#navigator-toolbox {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10 !important;
+  background-color: var(--toolbox-bgcolor, var(--toolbar-bgcolor, Canvas)) !important;
+  transform: translateY(calc(var(--marlinos-strip) - 100%));
+  transition: transform 120ms ease 400ms !important;
+}
+
+/* shown: hovered, typing in it, or one of its menus or the address bar dropdown is open */
+#navigator-toolbox:hover,
+#navigator-toolbox:focus-within,
+#navigator-toolbox:has(#urlbar[open], [open="true"]),
+#mainPopupSet:has(> [panelopen]:not(#tab-preview-panel)) ~ #navigator-toolbox {
+  transform: none;
+  transition-delay: 0ms !important;
+}
+
+/* toolbar customization and F11 fullscreen keep Firefox's own layout */
+:root[customizing] #navigator-toolbox,
+:root[sizemode="fullscreen"] #navigator-toolbox {
+  position: relative !important;
+  transform: none;
+}

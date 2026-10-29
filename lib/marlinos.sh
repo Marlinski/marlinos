@@ -7,6 +7,7 @@
 #   config/<app>  -> ~/.config/<app>      (symlinked)
 #   home/<file>   -> ~/<file>             (symlinked)
 #   bin/<script>  -> ~/.local/bin/<script> (symlinked)
+#   firefox/chrome -> <each Firefox profile>/chrome (symlinked: userChrome.css)
 #   system/...    -> /...                 (copied as root, @USER@ replaced in text files, backed up)
 #   src/          sources that generate files elsewhere in the layer (not applied)
 #   flake.nix     a Nix environment, installed into the user's Nix profile (named after the layer)
@@ -209,6 +210,9 @@ link_configs() {
     for f in "$l"/config/*; do [[ -e $f ]] && link_one "$f" ~/.config/"$(basename "$f")"; done
     for f in "$l"/home/.[!.]*; do [[ -e $f ]] && link_one "$f" ~/"$(basename "$f")"; done
     for f in "$l"/bin/*; do [[ -e $f ]] && link_one "$f" ~/.local/bin/"$(basename "$f")"; done
+    # Firefox reads userChrome.css only inside a profile, which exists after its first start (re-run then)
+    [[ -d $l/firefox/chrome ]] || continue
+    for f in ~/.mozilla/firefox/*/prefs.js; do [[ -e $f ]] && link_one "$l/firefox/chrome" "$(dirname "$f")/chrome"; done
   done
   for f in "$REPO"/bin/*; do link_one "$f" ~/.local/bin/"$(basename "$f")"; done
   if [[ -d $HOST_DIR ]]; then link_one "$HOST_DIR" ~/.config/marlinos/host; fi
