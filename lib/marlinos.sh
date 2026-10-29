@@ -122,12 +122,12 @@ apply_system_files() {
       else                         # binary (images...): as is
         cp "$src" "$tmp"
       fi
-      if ! sudo cmp -s "$tmp" "$dst"; then
+      if ! sudo cmp -s "$tmp" "$dst" || [[ -x $src && ! -x $dst ]]; then
         if sudo test -e "$dst"; then
           sudo install -Dm644 "$dst" "$SYS_BACKUP$dst"
           if grep -Iq . "$tmp"; then sudo diff -u "$dst" "$tmp" | sed 's/^/    /' || true; fi
         fi
-        sudo install -Dm644 "$tmp" "$dst"
+        sudo install -Dm"$([[ -x $src ]] && echo 755 || echo 644)" "$tmp" "$dst"   # keeps scripts (grub.d) executable
         info "installed $dst (from ${l#$REPO/})"
         changed+=("$dst")
       fi
