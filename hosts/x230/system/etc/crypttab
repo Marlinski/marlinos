@@ -1,6 +1,7 @@
 # marlinos x230: /etc/crypttab
-# data: the HDD (LUKS2, LVM inside: home, music, opt). Passphrase asked at boot through plymouth.
-data  UUID=35e44968-9e83-4769-bad4-92f33aceb53a  none  luks
-# swap: new random key every boot (no hibernation). By-id path pins the SSD by serial number,
+# data: the 1 TB SSD (LUKS2, btrfs inside: @home, @data). Passphrase asked at boot through plymouth.
+# discard lets TRIM through to the SSD; no-*-workqueue skips dm-crypt's queues (faster on SSD).
+data  UUID=402fd13e-c7dd-41f2-928d-b26baefeb616  none  luks,discard,no-read-workqueue,no-write-workqueue
+# swap: new random key every boot (no hibernation). By-id path pins the mSATA SSD by serial number,
 # so a renamed disk can never be turned into swap (that would destroy it).
 swap  /dev/disk/by-id/ata-SAMSUNG_MZMPC032HBCD-000L1_S0Y2NSAC634690-part3  /dev/urandom  swap,cipher=aes-xts-plain64,size=512,sector-size=4096
