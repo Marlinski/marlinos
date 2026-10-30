@@ -1,0 +1,9 @@
+// marlinos: the desktop's own user manages the network (wifi in nmtui, VPN...) without a password prompt.
+// NetworkManager's default asks for the admin password to save a connection for all users; here there is one user.
+// Only from the session at the machine (local + active), not over ssh.
+polkit.addRule(function(action, subject) {
+  if (action.id.indexOf("org.freedesktop.NetworkManager.") == 0 &&
+      subject.user == "@USER@" && subject.local && subject.active) {
+    return polkit.Result.YES;
+  }
+});
