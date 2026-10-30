@@ -23,7 +23,7 @@ prefix P / prefix N :: previous / next session
 ## Windows (tabs)
 prefix c :: new window (same directory)
 Alt+1 … Alt+9 :: go to window n
-Alt+Left / Alt+Right :: previous / next window
+prefix p / prefix n :: previous / next window
 Alt+Shift+Left / Right :: move the window left / right
 prefix r :: rename window
 prefix k :: kill window
