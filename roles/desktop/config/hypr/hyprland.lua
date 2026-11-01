@@ -5,7 +5,6 @@
 hl.monitor({ output = "", mode = "preferred", position = "auto", scale = 1 })
 
 local terminal = "uwsm app -- alacritty"
-local browser  = "uwsm app -- firefox"
 local menu     = 'fuzzel --launch-prefix="uwsm app -- "'
 
 local function bind(keys, description, dispatcher, flags)
@@ -82,8 +81,8 @@ hl.config({
 -- ---------------------------------------------------------------- apps
 bind("SUPER + Return", "Terminal", exec(terminal))
 bind("SUPER + Space", "Launcher", exec(menu))
-bind("SUPER + B", "Browser", exec(browser))
-bind("SUPER + SHIFT + B", "Browser (private)", exec(browser .. " --private-window"))
+bind("SUPER + B", "Browser (back to it, or a new window)", exec("~/.local/bin/browser"))
+bind("SUPER + SHIFT + B", "Browser (private)", exec("~/.local/bin/browser private"))
 bind("SUPER + F", "File manager", exec(terminal .. " -e ranger"))
 bind("SUPER + T", "Activity", exec(terminal .. " -e btop"))
 bind("SUPER + N", "Editor", exec(terminal .. " -e nvim"))

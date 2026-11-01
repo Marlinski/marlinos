@@ -1,0 +1,21 @@
+#!/bin/bash
+# Super+B: back to Firefox when it has a window (instant, the last one used), a new window otherwise.
+# `browser private` (Super+Shift+B): a Firefox of its own, on a throw-away profile deleted when it closes,
+# nothing shared with the normal one (not even its process); the system policy still installs uBlock in it.
+# Only the first start goes through uwsm (its own systemd scope): a new window of a running Firefox joins
+# that process, so `uwsm app` (~200 ms of Python) would only make an empty scope.
+if [[ $1 == private ]]; then
+  dir=$(mktemp -d --tmpdir firefox-private.XXXXXX)
+  # its own app id: Super+B never brings a private window back
+  uwsm app -- firefox --new-instance --name firefox-private --profile "$dir" --private-window
+  rm -rf "$dir"
+  exit
+fi
+addr=$(hyprctl clients -j | jq -r '[.[] | select(.class == "firefox")] | sort_by(.focusHistoryID) | .[0].address // empty')
+if [[ -n $addr ]]; then
+  hyprctl dispatch "hl.dsp.focus({ window = \"address:$addr\" })" >/dev/null
+elif pgrep -xf /usr/lib/firefox/firefox >/dev/null; then   # the normal instance (no arguments), not a private one
+  exec firefox --new-window
+else
+  exec uwsm app -- firefox
+fi
