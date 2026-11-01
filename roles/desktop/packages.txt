@@ -81,6 +81,9 @@ bluetui
 
 # browser next to Chrome (hardened: system/etc/firefox/policies)
 firefox
+# Tor Browser (IP hidden behind the Tor network): the launcher fetches it from the Tor Project, checks its
+# signature and keeps it updated. Only from the launcher (Super+Space), no key.
+torbrowser-launcher
 
 # passwords: KeePassXC (browser extension for Firefox and Chrome), the database synced by
 # Syncthing between the machines and the phone, over the mesh only
