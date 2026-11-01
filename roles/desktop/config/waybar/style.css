@@ -15,8 +15,9 @@ window#waybar {
   padding: 0 6px;
   color: #565f89;
 }
-#workspaces button.active { color: #7aa2f7; }
 #workspaces button.empty { color: #414868; }
+/* after .empty: the workspace you are on is highlighted even when it has no window */
+#workspaces button.active { color: #7aa2f7; }
 
 #clock, #tray, #custom-music, #pulseaudio, #backlight, #network, #bluetooth, #cpu, #battery {
   padding: 0 8px;
