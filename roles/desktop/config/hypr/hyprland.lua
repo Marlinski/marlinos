@@ -30,8 +30,9 @@ hl.config({
         gaps_out = 6,
         border_size = 2,
         col = {
-            active_border = "rgb(7aa2f7)",
-            inactive_border = "rgb(414868)",
+            -- quiet borders: the focused window in soft grey, the others a faint outline
+            active_border = "rgb(565f89)",
+            inactive_border = "rgb(292e42)",
         },
         layout = "dwindle",
     },
