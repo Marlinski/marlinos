@@ -58,10 +58,10 @@ hl.config({
 hl.curve("quick", { type = "bezier", points = { { 0.15, 0 }, { 0.1, 1 } } })
 hl.animation({ leaf = "global", enabled = true, speed = 3, bezier = "quick" })
 hl.animation({ leaf = "workspaces", enabled = true, speed = 2, bezier = "quick", style = "slide" })
--- windows snap into place (open, close, move)
-for _, leaf in ipairs({ "windows", "windowsIn", "windowsOut", "windowsMove" }) do
-    hl.animation({ leaf = leaf, enabled = false })
-end
+-- windows slide into place, quickly: a resized program needs a frame or two to redraw, and a snap showed
+-- that as a flicker (moving a window down/up resizes all of them)
+hl.animation({ leaf = "windowsMove", enabled = true, speed = 2, bezier = "quick" })
+hl.animation({ leaf = "windows", enabled = true, speed = 2, bezier = "quick", style = "popin 90%" })
 
 -- ---------------------------------------------------------------- input
 hl.config({

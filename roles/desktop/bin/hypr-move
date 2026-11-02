@@ -4,7 +4,10 @@
 # (left/right), and the other windows share the rest: three windows, move one down -> two side by
 # side on top, that one below.
 dir=${1:?usage: hypr-move l|r|u|d}
-dsp() { hyprctl dispatch "$1" >/dev/null; sleep 0.05; }   # a Lua dispatcher, e.g. hl.dsp.layout('togglesplit')
+# A Lua dispatcher, e.g. hl.dsp.layout('togglesplit'). No pause after it: window moves are not animated, so the
+# new geometry is there at once, and each pause showed an in-between layout (the flicker of a move down/up).
+dsp() { hyprctl dispatch "$1" >/dev/null; }
+dsp_all() { local c=""; for d; do c+="hl.dispatch($d); "; done; hyprctl eval "$c" >/dev/null; }   # in one go
 me=$(hyprctl activewindow -j | jq -r .address)
 [[ $me == 0x* ]] || exit 0
 ws=$(hyprctl activewindow -j | jq -r .workspace.id)
@@ -32,7 +35,7 @@ place() {  # the window at the asked edge of the root split, the others side by 
     read -r _ bx by _ <<<"${others[1]}"
     case $dir in
       u | d) ((ax == bx)) ;; l | r) ((ay == by)) ;;
-    esac && { dsp "hl.dsp.focus({ window = 'address:$a' })"; dsp "hl.dsp.layout('togglesplit')"; dsp "hl.dsp.focus({ window = 'address:$me' })"; }
+    esac && dsp_all "hl.dsp.focus({ window = 'address:$a' })" "hl.dsp.layout('togglesplit')" "hl.dsp.focus({ window = 'address:$me' })"
   fi
   return 0
 }
